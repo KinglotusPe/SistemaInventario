@@ -67,12 +67,12 @@
 
     .login-container {
       width: 100%;
-      max-width: 480px;
-      background: rgba(17, 24, 39, 0.9);
+      max-width: 540px;
+      background: rgba(17, 24, 39, 0.95);
       backdrop-filter: blur(16px);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 36px 32px;
+      padding: 34px 30px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(79, 70, 229, 0.2);
       animation: loginFadeIn 0.3s ease-out;
       z-index: 10;
@@ -242,6 +242,119 @@
       display: none;
       align-items: center;
       gap: 8px;
+    }
+
+    .login-success-alert {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: #6ee7b7;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Tabs Login / Registro */
+    .auth-tabs {
+      display: flex;
+      background: rgba(9, 13, 22, 0.7);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 22px;
+      border: 1px solid var(--border);
+      gap: 4px;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 9px 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .auth-tab-btn:hover {
+      color: #fff;
+    }
+
+    .auth-tab-btn.active {
+      background: var(--surface-light);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-focus);
+    }
+
+    .login-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 520px) {
+      .login-grid-2 { grid-template-columns: 1fr; }
+    }
+
+    /* JSON Payload Preview */
+    .json-preview-card {
+      margin-top: 14px;
+      background: #060911;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .json-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .json-preview-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      color: #a5b4fc;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 135px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    .btn-copy-json {
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #c7d2fe;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-copy-json:hover {
+      background: rgba(99, 102, 241, 0.4);
+      color: #fff;
     }
 
     /* ============================================================== */
@@ -814,55 +927,158 @@
         <p class="login-subtitle">Control de Acceso y Gestión Integral (RBAC)</p>
       </div>
 
-      <!-- Error Alert -->
+      <!-- Selector de Modo: Login vs Registro JSON -->
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="tab-btn-login" onclick="cambiarAuthTab('login')">
+          🔑 Iniciar Sesión
+        </button>
+        <button type="button" class="auth-tab-btn" id="tab-btn-register" onclick="cambiarAuthTab('register')">
+          📝 Registrarse (JSON)
+        </button>
+      </div>
+
+      <!-- Alertas de Error y Éxito -->
       <div id="login-error-alert" class="login-error-alert">
         <span>⚠️</span>
         <span id="login-error-msg">Credenciales incorrectas.</span>
       </div>
+      <div id="login-success-alert" class="login-success-alert">
+        <span>✅</span>
+        <span id="login-success-msg">Usuario registrado exitosamente.</span>
+      </div>
 
-      <form onsubmit="handleLoginSubmit(event)">
-        <div class="login-input-group">
-          <label>Nombre de Usuario</label>
-          <div class="login-input-wrap">
-            <span class="login-input-icon">👤</span>
-            <input type="text" id="login-username" class="login-input" placeholder="Ingresa tu usuario" required autocomplete="username">
+      <!-- ================= VISTA 1: INICIAR SESIÓN ================= -->
+      <div id="login-view">
+        <form onsubmit="handleLoginSubmit(event)">
+          <div class="login-input-group">
+            <label>Nombre de Usuario</label>
+            <div class="login-input-wrap">
+              <span class="login-input-icon">👤</span>
+              <input type="text" id="login-username" class="login-input" placeholder="Ingresa tu usuario" required autocomplete="username">
+            </div>
+          </div>
+
+          <div class="login-input-group">
+            <label>Contraseña</label>
+            <div class="login-input-wrap">
+              <span class="login-input-icon">🔒</span>
+              <input type="password" id="login-password" class="login-input" placeholder="Ingresa tu contraseña" required autocomplete="current-password">
+            </div>
+          </div>
+
+          <button type="submit" id="btn-login-submit" class="btn-login-submit">
+            Iniciar Sesión
+          </button>
+        </form>
+
+        <!-- Quick Credential Auto-Fill Chips (Para evaluación ágil del docente) -->
+        <div class="quick-creds-card">
+          <div class="quick-creds-title">Cuentas del Sistema (Clic para rellenar):</div>
+          <div class="quick-chips-grid">
+            <div class="cred-chip" onclick="rellenarCredenciales('admin', 'Admin123*')">
+              <div class="cred-chip-role" style="color: #c084fc;">👑 Administrador</div>
+              <div class="cred-chip-user">user: admin</div>
+            </div>
+            <div class="cred-chip" onclick="rellenarCredenciales('supervisor', 'Admin123*')">
+              <div class="cred-chip-role" style="color: #60a5fa;">📋 Supervisor</div>
+              <div class="cred-chip-user">user: supervisor</div>
+            </div>
+            <div class="cred-chip" onclick="rellenarCredenciales('almacenero', 'Admin123*')">
+              <div class="cred-chip-role" style="color: #fbbf24;">📦 Almacenero</div>
+              <div class="cred-chip-user">user: almacenero</div>
+            </div>
+            <div class="cred-chip" onclick="rellenarCredenciales('cajero', 'Admin123*')">
+              <div class="cred-chip-role" style="color: #34d399;">💳 Cajero</div>
+              <div class="cred-chip-user">user: cajero</div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div class="login-input-group">
-          <label>Contraseña</label>
-          <div class="login-input-wrap">
-            <span class="login-input-icon">🔒</span>
-            <input type="password" id="login-password" class="login-input" placeholder="Ingresa tu contraseña" required autocomplete="current-password">
+      <!-- ================= VISTA 2: REGISTRO JSON ================= -->
+      <div id="register-view" style="display: none;">
+        <form onsubmit="handleRegisterSubmit(event)">
+          <div class="login-grid-2">
+            <div class="login-input-group">
+              <label>Usuario (Username) *</label>
+              <div class="login-input-wrap">
+                <span class="login-input-icon">👤</span>
+                <input type="text" id="reg-username" class="login-input" placeholder="Ej: nuevo.usuario" required oninput="actualizarJsonPreview()">
+              </div>
+            </div>
+            <div class="login-input-group">
+              <label>Contraseña *</label>
+              <div class="login-input-wrap">
+                <span class="login-input-icon">🔒</span>
+                <input type="password" id="reg-password" class="login-input" placeholder="Mínimo 6 car." required oninput="actualizarJsonPreview()">
+              </div>
+            </div>
           </div>
-        </div>
 
-        <button type="submit" id="btn-login-submit" class="btn-login-submit">
-          Iniciar Sesión
-        </button>
-      </form>
+          <div class="login-grid-2">
+            <div class="login-input-group">
+              <label>Nombres *</label>
+              <div class="login-input-wrap">
+                <span class="login-input-icon">🪪</span>
+                <input type="text" id="reg-nombres" class="login-input" placeholder="Ej: Juan" required oninput="actualizarJsonPreview()">
+              </div>
+            </div>
+            <div class="login-input-group">
+              <label>Apellidos *</label>
+              <div class="login-input-wrap">
+                <span class="login-input-icon">🪪</span>
+                <input type="text" id="reg-apellidos" class="login-input" placeholder="Ej: Perez" required oninput="actualizarJsonPreview()">
+              </div>
+            </div>
+          </div>
 
-      <!-- Quick Credential Auto-Fill Chips (Para evaluación ágil del docente) -->
-      <div class="quick-creds-card">
-        <div class="quick-creds-title">Cuentas del Sistema (Clic para rellenar):</div>
-        <div class="quick-chips-grid">
-          <div class="cred-chip" onclick="rellenarCredenciales('admin', 'Admin123*')">
-            <div class="cred-chip-role" style="color: #c084fc;">👑 Administrador</div>
-            <div class="cred-chip-user">user: admin</div>
+          <div class="login-grid-2">
+            <div class="login-input-group">
+              <label>Correo Electrónico *</label>
+              <div class="login-input-wrap">
+                <span class="login-input-icon">📧</span>
+                <input type="email" id="reg-email" class="login-input" placeholder="usuario@tienda.pe" required oninput="actualizarJsonPreview()">
+              </div>
+            </div>
+            <div class="login-input-group">
+              <label>Teléfono</label>
+              <div class="login-input-wrap">
+                <span class="login-input-icon">📱</span>
+                <input type="text" id="reg-telefono" class="login-input" placeholder="+51 987654321" oninput="actualizarJsonPreview()">
+              </div>
+            </div>
           </div>
-          <div class="cred-chip" onclick="rellenarCredenciales('supervisor', 'Admin123*')">
-            <div class="cred-chip-role" style="color: #60a5fa;">📋 Supervisor</div>
-            <div class="cred-chip-user">user: supervisor</div>
+
+          <div class="login-input-group">
+            <label>Rol en el Sistema (RBAC) *</label>
+            <div class="login-input-wrap">
+              <span class="login-input-icon">🛡️</span>
+              <select id="reg-rol" class="login-input" style="padding-left: 42px; cursor: pointer;" onchange="actualizarJsonPreview()">
+                <option value="ROLE_CAJERO_VENDEDOR">💳 Cajero / Vendedor (Ventas y Clientes)</option>
+                <option value="ROLE_OPERADOR_ALMACEN">📦 Operador de Almacén (Kardex y Stock)</option>
+                <option value="ROLE_SUPERVISOR_ALMACEN">📋 Supervisor de Almacén (Compras y Stock)</option>
+                <option value="ROLE_ADMINISTRADOR">👑 Administrador Total (Acceso Completo)</option>
+              </select>
+            </div>
           </div>
-          <div class="cred-chip" onclick="rellenarCredenciales('almacenero', 'Admin123*')">
-            <div class="cred-chip-role" style="color: #fbbf24;">📦 Almacenero</div>
-            <div class="cred-chip-user">user: almacenero</div>
+
+          <!-- Previsualizador de Carga Útil JSON en Vivo -->
+          <div class="json-preview-card">
+            <div class="json-preview-header">
+              <span>⚡ Carga Útil JSON (Payload POST /api/auth/register)</span>
+              <button type="button" class="btn-copy-json" onclick="copiarJsonPayload()">📋 Copiar JSON</button>
+            </div>
+            <pre id="json-payload-preview" class="json-preview-code">{}</pre>
           </div>
-          <div class="cred-chip" onclick="rellenarCredenciales('cajero', 'Admin123*')">
-            <div class="cred-chip-role" style="color: #34d399;">💳 Cajero</div>
-            <div class="cred-chip-user">user: cajero</div>
-          </div>
-        </div>
+
+          <button type="submit" id="btn-register-submit" class="btn-login-submit" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); margin-top: 14px;">
+            🚀 Enviar Registro JSON (POST)
+          </button>
+
+          <button type="button" onclick="llenarRegistroEjemplo()" style="width: 100%; margin-top: 8px; background: transparent; border: 1px dashed var(--border-focus); color: #a5b4fc; padding: 8px; border-radius: 8px; font-size: 0.8rem; cursor: pointer;">
+            ⚡ Autocompletar Ejemplo de Prueba para el Docente
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -1532,12 +1748,172 @@
     }
 
     // =========================================================================
-    // CONTROL DE AUTENTICACIÓN Y PANTALLA DE LOGEO
+    // CONTROL DE AUTENTICACIÓN, REGISTRO JSON Y PANTALLA DE LOGEO
     // =========================================================================
+    function cambiarAuthTab(tab) {
+      const loginView = document.getElementById('login-view');
+      const registerView = document.getElementById('register-view');
+      const tabBtnLogin = document.getElementById('tab-btn-login');
+      const tabBtnRegister = document.getElementById('tab-btn-register');
+      const errAlert = document.getElementById('login-error-alert');
+      const succAlert = document.getElementById('login-success-alert');
+
+      errAlert.style.display = 'none';
+      succAlert.style.display = 'none';
+
+      if (tab === 'login') {
+        tabBtnLogin.classList.add('active');
+        tabBtnRegister.classList.remove('active');
+        loginView.style.display = 'block';
+        registerView.style.display = 'none';
+      } else {
+        tabBtnRegister.classList.add('active');
+        tabBtnLogin.classList.remove('active');
+        loginView.style.display = 'none';
+        registerView.style.display = 'block';
+        actualizarJsonPreview();
+      }
+    }
+
+    function actualizarJsonPreview() {
+      const u = document.getElementById('reg-username')?.value.trim() || 'nuevo.usuario';
+      const p = document.getElementById('reg-password')?.value ? '••••••••' : 'Clave123*';
+      const n = document.getElementById('reg-nombres')?.value.trim() || 'Juan';
+      const a = document.getElementById('reg-apellidos')?.value.trim() || 'Perez';
+      const e = document.getElementById('reg-email')?.value.trim() || 'usuario@tienda.pe';
+      const t = document.getElementById('reg-telefono')?.value.trim() || '+51 987654321';
+      const r = document.getElementById('reg-rol')?.value || 'ROLE_CAJERO_VENDEDOR';
+
+      const payload = {
+        username: u,
+        password: p,
+        nombres: n,
+        apellidos: a,
+        email: e,
+        telefono: t,
+        rol: r
+      };
+
+      const pre = document.getElementById('json-payload-preview');
+      if (pre) {
+        pre.textContent = JSON.stringify(payload, null, 2);
+      }
+    }
+
+    function copiarJsonPayload() {
+      const u = document.getElementById('reg-username').value.trim() || 'nuevo.usuario';
+      const p = document.getElementById('reg-password').value || 'Clave123*';
+      const n = document.getElementById('reg-nombres').value.trim() || 'Juan';
+      const a = document.getElementById('reg-apellidos').value.trim() || 'Perez';
+      const e = document.getElementById('reg-email').value.trim() || 'usuario@tienda.pe';
+      const t = document.getElementById('reg-telefono').value.trim() || '+51 987654321';
+      const r = document.getElementById('reg-rol').value || 'ROLE_CAJERO_VENDEDOR';
+
+      const payload = {
+        username: u,
+        password: p,
+        nombres: n,
+        apellidos: a,
+        email: e,
+        telefono: t,
+        rol: r
+      };
+
+      navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(() => {
+        showToast('📋 ¡Carga útil JSON copiada al portapapeles!', 'info');
+      }).catch(() => {
+        showToast('Copia manual: Selecciona el texto del bloque de código', 'warning');
+      });
+    }
+
+    function llenarRegistroEjemplo() {
+      const rand = Math.floor(Math.random() * 900) + 100;
+      document.getElementById('reg-username').value = `usuario_${rand}`;
+      document.getElementById('reg-password').value = `Demo${rand}*`;
+      document.getElementById('reg-nombres').value = `Carlos`;
+      document.getElementById('reg-apellidos').value = `Mendoza`;
+      document.getElementById('reg-email').value = `carlos${rand}@tienda.pe`;
+      document.getElementById('reg-telefono').value = `+51 987${rand}11`;
+      document.getElementById('reg-rol').value = 'ROLE_CAJERO_VENDEDOR';
+
+      actualizarJsonPreview();
+      showToast('⚡ Datos de prueba completados en el formulario y JSON', 'success');
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const u = document.getElementById('reg-username').value.trim();
+      const p = document.getElementById('reg-password').value;
+      const n = document.getElementById('reg-nombres').value.trim();
+      const a = document.getElementById('reg-apellidos').value.trim();
+      const em = document.getElementById('reg-email').value.trim();
+      const t = document.getElementById('reg-telefono').value.trim();
+      const r = document.getElementById('reg-rol').value;
+
+      const btn = document.getElementById('btn-register-submit');
+      const errAlert = document.getElementById('login-error-alert');
+      const succAlert = document.getElementById('login-success-alert');
+
+      if (p.length < 6) {
+        errAlert.style.display = 'flex';
+        document.getElementById('login-error-msg').textContent = 'La contraseña debe tener un mínimo de 6 caracteres.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando JSON al backend...';
+      errAlert.style.display = 'none';
+      succAlert.style.display = 'none';
+
+      try {
+        const resp = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: u,
+            password: p,
+            nombres: n,
+            apellidos: a,
+            email: em,
+            telefono: t,
+            rol: r
+          })
+        });
+
+        const data = await resp.json();
+        if (!resp.ok || !data.success) {
+          throw new Error(data.message || 'Error al procesar el registro');
+        }
+
+        // Mostrar alerta de éxito
+        succAlert.style.display = 'flex';
+        document.getElementById('login-success-msg').textContent = `¡Usuario '${u}' registrado exitosamente mediante JSON! Redirigiendo al login...`;
+        showToast(`🎉 ¡Usuario '${u}' registrado exitosamente!`, 'success');
+
+        // Prellenar credenciales en login y cambiar de tab tras breve pausa
+        setTimeout(() => {
+          document.getElementById('login-username').value = u;
+          document.getElementById('login-password').value = p;
+          cambiarAuthTab('login');
+          succAlert.style.display = 'flex';
+          document.getElementById('login-success-msg').textContent = `¡Cuenta lista! Ya puedes iniciar sesión con '${u}'.`;
+        }, 1500);
+
+      } catch (err) {
+        errAlert.style.display = 'flex';
+        document.getElementById('login-error-msg').textContent = err.message || 'Error al enviar el JSON de registro.';
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🚀 Enviar Registro JSON (POST)';
+      }
+    }
+
     function rellenarCredenciales(u, p) {
       document.getElementById('login-username').value = u;
       document.getElementById('login-password').value = p;
       document.getElementById('login-error-alert').style.display = 'none';
+      document.getElementById('login-success-alert').style.display = 'none';
     }
 
     async function handleLoginSubmit(e) {
@@ -1546,10 +1922,12 @@
       const p = document.getElementById('login-password').value;
       const btn = document.getElementById('btn-login-submit');
       const errAlert = document.getElementById('login-error-alert');
+      const succAlert = document.getElementById('login-success-alert');
 
       btn.disabled = true;
       btn.textContent = 'Verificando credenciales...';
       errAlert.style.display = 'none';
+      succAlert.style.display = 'none';
 
       try {
         const resp = await fetch(`${API_BASE}/auth/login`, {
@@ -1592,6 +1970,8 @@
       document.getElementById('pantalla-login').style.display = 'flex';
       document.getElementById('login-password').value = '';
       document.getElementById('login-error-alert').style.display = 'none';
+      document.getElementById('login-success-alert').style.display = 'none';
+      cambiarAuthTab('login');
     }
 
     // =========================================================================

@@ -56,6 +56,7 @@ d:/SistemaInventarioTienda/
 │       │   ├── dto/                                 # OBJETOS DE TRANSFERENCIA DE DATOS (Data Transfer Objects)
 │       │   │   ├── ApiResponse.java                 # Formato unificado de respuesta JSON
 │       │   │   ├── LoginRequest.java / JwtResponse.java # Carga útil de autenticación
+│       │   │   ├── RegisterRequest.java             # Carga útil para registro de usuarios JSON
 │       │   │   ├── ProductoDTO.java / StockCriticoDTO.java
 │       │   │   ├── MovimientoRequestDTO.java / ItemMovimientoDTO.java
 │       │   │   └── VentaRequestDTO.java / ItemVentaDTO.java
@@ -123,6 +124,27 @@ d:/SistemaInventarioTienda/
 ### 5. Motor de Reportes PDF con JasperReports 6.21.3
 * Genera documentos ejecutivos en formato estándar PDF compilando directamente la plantilla `stock_critico.jrxml` sin requerir software externo en el cliente. Incluye membrete corporativo, fecha de emisión, cálculo de déficit de reposición y firma digital.
 
+### 6. Registro de Nuevos Usuarios mediante Carga Útil JSON (Sign Up REST)
+* **Endpoint público**: `POST /api/auth/register`
+* **Cabecera**: `Content-Type: application/json`
+* **Carga útil JSON (Payload de ejemplo)**:
+  ```json
+  {
+    "username": "cajero.nuevo",
+    "password": "Password123*",
+    "nombres": "Ana",
+    "apellidos": "Torres",
+    "email": "ana.torres@tienda.pe",
+    "telefono": "+51 987654321",
+    "rol": "ROLE_CAJERO_VENDEDOR"
+  }
+  ```
+* **Mecanismos y Reglas de Negocio aplicadas**:
+  1. **Validación de unicidad**: Verifica con `usuarioRepository.existsByUsername()` y `existsByEmail()`. Si ya existen, retorna HTTP `400 Bad Request` indicando el conflicto exacto.
+  2. **Criptografía de Contraseñas**: La clave viaja en el JSON y es encriptada con algoritmo hash irreversible **BCrypt** antes de persistir en base de datos. La entidad `Usuario` tiene `@JsonIgnore` sobre el campo `password` para jamás exponer el hash en las respuestas JSON.
+  3. **Asignación RBAC Dinámica**: Vincula automáticamente la entidad `Rol` seleccionada (`ROLE_ADMINISTRADOR`, `ROLE_SUPERVISOR_ALMACEN`, `ROLE_OPERADOR_ALMACEN` o `ROLE_CAJERO_VENDEDOR`) con sus respectivos permisos granulares en MySQL.
+  4. **Previsualizador en Vivo**: En la pantalla de login (`http://localhost:8080/`), la pestaña **"Registrarse (JSON)"** muestra en tiempo real la estructura JSON que se genera a medida que el usuario escribe, facilitando la demostración ante el docente evaluador.
+
 ---
 
 ## 🛡️ 4. Control de Acceso RBAC y Cuentas de Acceso
@@ -171,5 +193,7 @@ Ingrese a:
 👉 **http://localhost:8080/**
 
 
-Aparecerá la **Pantalla de Logeo Dedicada**. Ingrese con cualquiera de las cuentas indicadas arriba (o haga clic en los botones de auto-llenado de credenciales) para experimentar la interfaz adaptada a ese rol.
+Aparecerá la **Pantalla de Logeo Dedicada**:
+* **Iniciar Sesión**: Ingrese con cualquiera de las cuentas indicadas arriba (o haga clic en los chips rápidos de credenciales).
+* **Registrarse (JSON)**: Cambie a la pestaña "Registrarse (JSON)" para crear nuevas cuentas en tiempo real enviando la carga útil JSON al backend, con previsualización del JSON y botón de autollenado rápido para la evaluación del docente.
 
