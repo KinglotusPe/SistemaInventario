@@ -139,7 +139,7 @@
             },
             "body": {
                 "type": "json",
-                "raw": "[\n  {\n    \"codigoSku\": \"SKU-TC-001\",\n    \"nombre\": \"Teclado Mecanico Thunder RGB\",\n    \"descripcion\": \"Switches Red, Retroiluminado, Anti-ghosting\",\n    \"precioVenta\": 249.90,\n    \"precioCompra\": 160.00,\n    \"stockMinimo\": 5,\n    \"stockActual\": 20,\n    \"codigoBarras\": \"7751234567890\",\n    \"categoriaId\": 1\n  },\n  {\n    \"codigoSku\": \"SKU-TC-002\",\n    \"nombre\": \"Mouse Inalambrico Gamer 16000DPI\",\n    \"descripcion\": \"Sensor optico PixArt, Bateria recargable\",\n    \"precioVenta\": 189.00,\n    \"precioCompra\": 110.00,\n    \"stockMinimo\": 4,\n    \"stockActual\": 15,\n    \"codigoBarras\": \"7751234567891\",\n    \"categoriaId\": 1\n  }\n]",
+                "raw": "[\n  {\n    \"codigoSku\": \"SKU-TC-001\",\n    \"nombre\": \"Teclado Mecanico Thunder RGB\",\n    \"descripcion\": \"Switches Red, Retroiluminado, Anti-ghosting\",\n    \"precioVenta\": 249.90,\n    \"precioCosto\": 160.00,\n    \"stockMinimo\": 5,\n    \"stockActual\": 20,\n    \"codigoBarras\": \"7751234567890\",\n    \"idCategoria\": 1\n  },\n  {\n    \"codigoSku\": \"SKU-TC-002\",\n    \"nombre\": \"Mouse Inalambrico Gamer 16000DPI\",\n    \"descripcion\": \"Sensor optico PixArt, Bateria recargable\",\n    \"precioVenta\": 189.00,\n    \"precioCosto\": 110.00,\n    \"stockMinimo\": 4,\n    \"stockActual\": 15,\n    \"codigoBarras\": \"7751234567891\",\n    \"idCategoria\": 1\n  }\n]",
                 "form": []
             }
         },
@@ -181,7 +181,7 @@
             },
             "body": {
                 "type": "json",
-                "raw": "{\n  \"almacenId\": 1,\n  \"tipo\": \"ENTRADA_COMPRA\",\n  \"productoId\": 1,\n  \"cantidad\": 10,\n  \"motivo\": \"Ingreso de mercadería por OC-2026-ThunderClient\"\n}",
+                "raw": "{\n  \"idAlmacenOrigen\": 1,\n  \"codigoTipo\": \"ENTRADA_COMPRA\",\n  \"idProducto\": 1,\n  \"cantidad\": 10,\n  \"motivo\": \"Ingreso de mercadería por OC-2026-ThunderClient\"\n}",
                 "form": []
             }
         },
