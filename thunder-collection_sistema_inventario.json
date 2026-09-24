@@ -1,0 +1,205 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "Sistema Inventario Tienda - API REST",
+    "collectionId": "c56e3b08-8f81-4b11-9a70-8a1a3e6f9872",
+    "dateExported": "2026-09-24",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "fld_auth",
+            "name": "1. Autenticación (JWT)",
+            "containerId": "",
+            "created": "2026-09-24"
+        },
+        {
+            "_id": "fld_usuarios",
+            "name": "2. Gestión de Usuarios (Admin)",
+            "containerId": "",
+            "created": "2026-09-24"
+        },
+        {
+            "_id": "fld_productos",
+            "name": "3. Catálogo de Productos (JSON)",
+            "containerId": "",
+            "created": "2026-09-24"
+        },
+        {
+            "_id": "fld_kardex",
+            "name": "4. Kardex y Movimientos (JSON)",
+            "containerId": "",
+            "created": "2026-09-24"
+        }
+    ],
+    "requests": [
+        {
+            "_id": "req_login_admin",
+            "colId": "c56e3b08-8f81-4b11-9a70-8a1a3e6f9872",
+            "containerId": "fld_auth",
+            "name": "1. Login Administrador (Obtener Token JWT)",
+            "url": "http://localhost:8080/api/auth/login",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2026-09-24",
+            "modified": "2026-09-24",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin123*\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req_crear_usuario_admin",
+            "colId": "c56e3b08-8f81-4b11-9a70-8a1a3e6f9872",
+            "containerId": "fld_usuarios",
+            "name": "2. Crear Usuario con JSON (Requiere Token Admin)",
+            "url": "http://localhost:8080/api/usuarios",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2026-09-24",
+            "modified": "2026-09-24",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "auth": {
+                "type": "bearer",
+                "bearer": "PEGA_AQUI_EL_TOKEN_OBTENIDO_EN_EL_LOGIN"
+            },
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"cajero.tc\",\n  \"password\": \"Clave123*\",\n  \"nombres\": \"Carlos\",\n  \"apellidos\": \"Vargas\",\n  \"email\": \"carlos.vargas@tienda.pe\",\n  \"telefono\": \"+51 987654322\",\n  \"rol\": \"ROLE_CAJERO_VENDEDOR\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req_crear_usuario_sin_token",
+            "colId": "c56e3b08-8f81-4b11-9a70-8a1a3e6f9872",
+            "containerId": "fld_usuarios",
+            "name": "3. Probar Seguridad RBAC (Sin Token - Debe dar 401)",
+            "url": "http://localhost:8080/api/usuarios",
+            "method": "POST",
+            "sortNum": 21000,
+            "created": "2026-09-24",
+            "modified": "2026-09-24",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"hacker\",\n  \"password\": \"Clave123*\",\n  \"nombres\": \"Intruso\",\n  \"apellidos\": \"Test\",\n  \"email\": \"intruso@test.pe\",\n  \"rol\": \"ROLE_ADMINISTRADOR\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req_listar_usuarios",
+            "colId": "c56e3b08-8f81-4b11-9a70-8a1a3e6f9872",
+            "containerId": "fld_usuarios",
+            "name": "4. Listar Todos los Usuarios (GET)",
+            "url": "http://localhost:8080/api/usuarios",
+            "method": "GET",
+            "sortNum": 22000,
+            "created": "2026-09-24",
+            "modified": "2026-09-24",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "PEGA_AQUI_EL_TOKEN_OBTENIDO_EN_EL_LOGIN"
+            }
+        },
+        {
+            "_id": "req_importar_prods_json",
+            "colId": "c56e3b08-8f81-4b11-9a70-8a1a3e6f9872",
+            "containerId": "fld_productos",
+            "name": "5. Importar Productos en Lote mediante JSON",
+            "url": "http://localhost:8080/api/productos/importar-json",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2026-09-24",
+            "modified": "2026-09-24",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "auth": {
+                "type": "bearer",
+                "bearer": "PEGA_AQUI_EL_TOKEN_OBTENIDO_EN_EL_LOGIN"
+            },
+            "body": {
+                "type": "json",
+                "raw": "[\n  {\n    \"codigoSku\": \"SKU-TC-001\",\n    \"nombre\": \"Teclado Mecanico Thunder RGB\",\n    \"descripcion\": \"Switches Red, Retroiluminado, Anti-ghosting\",\n    \"precioVenta\": 249.90,\n    \"precioCompra\": 160.00,\n    \"stockMinimo\": 5,\n    \"stockActual\": 20,\n    \"codigoBarras\": \"7751234567890\",\n    \"categoriaId\": 1\n  },\n  {\n    \"codigoSku\": \"SKU-TC-002\",\n    \"nombre\": \"Mouse Inalambrico Gamer 16000DPI\",\n    \"descripcion\": \"Sensor optico PixArt, Bateria recargable\",\n    \"precioVenta\": 189.00,\n    \"precioCompra\": 110.00,\n    \"stockMinimo\": 4,\n    \"stockActual\": 15,\n    \"codigoBarras\": \"7751234567891\",\n    \"categoriaId\": 1\n  }\n]",
+                "form": []
+            }
+        },
+        {
+            "_id": "req_listar_prods",
+            "colId": "c56e3b08-8f81-4b11-9a70-8a1a3e6f9872",
+            "containerId": "fld_productos",
+            "name": "6. Consultar Catálogo de Productos (GET)",
+            "url": "http://localhost:8080/api/productos",
+            "method": "GET",
+            "sortNum": 31000,
+            "created": "2026-09-24",
+            "modified": "2026-09-24",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "PEGA_AQUI_EL_TOKEN_OBTENIDO_EN_EL_LOGIN"
+            }
+        },
+        {
+            "_id": "req_movimiento_kardex_json",
+            "colId": "c56e3b08-8f81-4b11-9a70-8a1a3e6f9872",
+            "containerId": "fld_kardex",
+            "name": "7. Registrar Movimiento Kardex con JSON (Entrada Compra)",
+            "url": "http://localhost:8080/api/movimientos",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2026-09-24",
+            "modified": "2026-09-24",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "auth": {
+                "type": "bearer",
+                "bearer": "PEGA_AQUI_EL_TOKEN_OBTENIDO_EN_EL_LOGIN"
+            },
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"almacenId\": 1,\n  \"tipo\": \"ENTRADA_COMPRA\",\n  \"productoId\": 1,\n  \"cantidad\": 10,\n  \"motivo\": \"Ingreso de mercadería por OC-2026-ThunderClient\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req_listar_movimientos",
+            "colId": "c56e3b08-8f81-4b11-9a70-8a1a3e6f9872",
+            "containerId": "fld_kardex",
+            "name": "8. Consultar Historial de Kardex (GET)",
+            "url": "http://localhost:8080/api/movimientos",
+            "method": "GET",
+            "sortNum": 41000,
+            "created": "2026-09-24",
+            "modified": "2026-09-24",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "PEGA_AQUI_EL_TOKEN_OBTENIDO_EN_EL_LOGIN"
+            }
+        }
+    ]
+}
