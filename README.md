@@ -18,7 +18,6 @@ Sistema web empresarial integral para la administración, control transaccional 
 3. [Módulos y Reglas de Negocio (¿Qué hace el sistema?)](#-3-módulos-y-reglas-de-negocio-qué-hace-el-sistema)
 4. [Control de Acceso RBAC y Cuentas de Acceso](#-4-control-de-acceso-rbac-y-cuentas-de-acceso)
 5. [Guía de Instalación y Puesta en Marcha](#-5-guía-de-instalación-y-puesta-en-marcha)
-6. [🎓 Balotario para Sustentación ante el Docente](#-6-balotario-para-sustentación-ante-el-docente-preguntas-y-respuestas-clave)
 
 ---
 
@@ -171,43 +170,6 @@ El servidor compilará las 19 entidades, conectará con MySQL e iniciará Tomcat
 Ingrese a:
 👉 **http://localhost:8080/**
 
+
 Aparecerá la **Pantalla de Logeo Dedicada**. Ingrese con cualquiera de las cuentas indicadas arriba (o haga clic en los botones de auto-llenado de credenciales) para experimentar la interfaz adaptada a ese rol.
 
----
-
-## 🎓 6. Balotario para Sustentación ante el Docente (Preguntas y Respuestas Clave)
-
-Si el docente o evaluador realiza preguntas técnicas sobre la implementación, aquí tienes las respuestas directas y fundamentadas en el código:
-
-### 1. ¿Por qué las entidades están en el paquete `entity` y no en `model`?
-> **Respuesta:** En la especificación **Jakarta Persistence (JPA)** y el estándar empresarial de Spring Boot, las clases anotadas con `@Entity` representan tablas mapeadas contra la base de datos relacional. El paquete `entity` expresa de forma canónica que estas clases pertenecen a la capa de persistencia ORM, reservándose `dto` para los objetos de transferencia de datos en los controladores.
-
-### 2. ¿Cómo solucionaron el problema de concurrencia al vender o mover stock?
-> **Respuesta:** Implementamos **Bloqueo Pesimista (Pessimistic Locking)** en `StockAlmacenRepository` mediante la anotación `@Lock(LockModeType.PESSIMISTIC_WRITE)`. Esto emite una cláusula SQL `SELECT ... FOR UPDATE` en MySQL, bloqueando la fila del producto para otros hilos concurrentes hasta que la transacción `@Transactional` actualiza el saldo y realiza el commit, garantizando que el stock jamás sea negativo.
-
-### 3. ¿Cuál es la diferencia entre un Rol y un Permiso en su arquitectura RBAC?
-> **Respuesta:** Un **Rol** (`ROLE_CAJERO_VENDEDOR`) es un perfil agrupador asignado a un usuario. Un **Permiso** (`VENTA_REGISTRAR`, `VENTA_ANULAR`) es un privilegio atómico que representa una acción específica. La relación es Muchos a Muchos (`roles_permisos`), lo que permite que la seguridad en los controladores REST esté protegida a nivel de privilegio con `@PreAuthorize("hasAuthority('VENTA_ANULAR')")` y no acoplada a un rol rígido.
-
-### 4. ¿Por qué las contraseñas no se almacenan en texto plano en la base de datos?
-> **Respuesta:** Se utiliza el algoritmo **BCrypt** (`BCryptPasswordEncoder`) con un factor de trabajo (*work factor*) de 10. BCrypt genera un hash irreversible con un *Salt* aleatorio integrado de 128 bits, protegiendo las credenciales frente a ataques de fuerza bruta o tablas *Rainbow*.
-
-### 5. ¿Cómo funciona la autenticación con JWT en este proyecto?
-> **Respuesta:** Es una arquitectura **Stateless** (sin estado en el servidor). Cuando el usuario envía sus credenciales a `/api/auth/login`, `AuthenticationManager` las valida. Luego, `JwtUtils` firma criptográficamente un token HMAC-SHA256 que incluye el username, roles y la lista de permisos del usuario. En cada petición subsecuente, `AuthTokenFilter` extrae el token de la cabecera `Authorization: Bearer <token>`, valida la firma y carga el `SecurityContext` en Spring Security.
-
-### 6. ¿Qué ocurre si un usuario sin permisos (ej. Cajero) intenta invocar un endpoint protegido (ej. anular venta) por Postman o cURL?
-> **Respuesta:** El filtro de Spring Security intercepta la petición antes de que llegue al controlador. Al evaluar `@PreAuthorize("hasAuthority('VENTA_ANULAR')")`, el manejador `AccessDeniedHandlerJwt` interrumpe la ejecución y retorna inmediatamente un código **HTTP 403 Forbidden** con un mensaje JSON explicativo: *"Acceso denegado: No cuenta con los privilegios requeridos"*.
-
-### 7. ¿Por qué se utilizan DTOs en lugar de recibir directamente las entidades JPA en los controladores?
-> **Respuesta:** Por tres razones de diseño empresarial:
-> 1. **Seguridad (Mass Assignment Attack)**: Evita que clientes maliciosos modifiquen campos críticos (como `idUsuario` o `estado`).
-> 2. **Desacoplamiento**: Si la base de datos cambia una columna, no rompemos el contrato de la API REST externa.
-> 3. **Evitar bucles de serialización**: Previene excepciones `StackOverflowError` provocadas por relaciones bidireccionales circulares (`@OneToMany` / `@ManyToOne`) al convertir a JSON.
-
-### 8. ¿Cómo genera JasperReports el reporte en PDF en tiempo de ejecución?
-> **Respuesta:** En `JasperReportService`, se lee el archivo XML de plantilla `stock_critico.jrxml` mediante `ClassPathResource`. Se compila a un objeto `JasperReport` en memoria con `JasperCompileManager.compileReport()`. Luego, se inyectan los productos con stock crítico a través de `new JRBeanCollectionDataSource(datosStock)` y se renderiza con `JasperExportManager.exportReportToPdf()`, entregando el arreglo de bytes (`byte[]`) directamente al navegador como `application/pdf`.
-
-### 9. ¿Qué garantiza la anotación `@Transactional` en el proceso de Venta?
-> **Respuesta:** Garantiza las propiedades **ACID** (Atomicidad, Consistencia, Aislamiento y Durabilidad). Si se inserta la cabecera de la venta pero ocurre un error al descontar el inventario o al procesar un detalle, la anotación desencadena un *Rollback* automático que deshace todas las operaciones intermedias en MySQL, impidiendo inconsistencias contables o de stock.
-
-### 10. ¿Cuántas tablas tiene la base de datos y cómo se relacionan con las entidades Java?
-> **Respuesta:** La base de datos tiene **21 tablas en MySQL** y existen **19 clases `@Entity` en Java**. La diferencia de 2 tablas se debe a que las relaciones Muchos a Muchos (`usuarios_roles` y `roles_permisos`) son tablas intermedias relacionales puras, las cuales JPA mapea transparentemente mediante `@ManyToMany` con la anotación `@JoinTable`.
