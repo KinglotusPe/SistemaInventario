@@ -1,0 +1,169 @@
+<div class="movimiento-container">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Kardex & Movimientos Multialmacén</h1>
+      <p class="page-subtitle">Registro transaccional de ingresos, salidas, traslados y ajustes con bloqueo pesimista</p>
+    </div>
+  </header>
+
+  <!-- Alerta informativa -->
+  <div *ngIf="mensajeAlerta" class="alert-banner" [ngClass]="'alert-' + tipoAlerta">
+    {{ mensajeAlerta }}
+  </div>
+
+  <div class="content-grid">
+    <!-- Panel Izquierdo: Formulario Transaccional -->
+    <div class="card form-card">
+      <h2 class="card-title">Registrar Operación de Almacén</h2>
+      
+      <form (ngSubmit)="registrarMovimiento()">
+        <!-- Selección de Almacén de Origen -->
+        <div class="form-group">
+          <label for="almacen-origen">Almacén de Operación / Origen *</label>
+          <select id="almacen-origen" [(ngModel)]="movimientoForm.idAlmacenOrigen" name="idAlmacenOrigen" required>
+            <option [value]="1">🏢 Almacén Central (Lima)</option>
+            <option [value]="2">🏬 Sucursal Norte (Chiclayo)</option>
+            <option [value]="3">🏭 Bodega de Distribución (Arequipa)</option>
+          </select>
+        </div>
+
+        <!-- Selección de Producto -->
+        <div class="form-group">
+          <label for="producto-select">Producto / Artículo *</label>
+          <select 
+            id="producto-select" 
+            [(ngModel)]="movimientoForm.idProducto" 
+            name="idProducto" 
+            (change)="alCambiarProducto()"
+            required>
+            <option *ngFor="let p of productos" [value]="p.idProducto">
+              {{ p.codigoSku }} - {{ p.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Ficha de Información de Stock en Tiempo Real -->
+        <div class="stock-info-box" *ngIf="productoSeleccionado">
+          <div class="stock-info-item">
+            <span class="label">Stock Físico Consolidado:</span>
+            <span class="value font-bold" [class.text-danger]="productoSeleccionado.stockActual! <= productoSeleccionado.stockMinimo">
+              {{ productoSeleccionado.stockActual }} unidades
+            </span>
+          </div>
+          <div class="stock-info-item">
+            <span class="label">Stock Mínimo de Seguridad:</span>
+            <span class="value">{{ productoSeleccionado.stockMinimo }} unidades</span>
+          </div>
+        </div>
+
+        <!-- Tipo de Movimiento con RBAC Guards -->
+        <div class="form-group">
+          <label for="tipo-movimiento">Tipo de Movimiento *</label>
+          <select 
+            id="tipo-movimiento" 
+            [(ngModel)]="movimientoForm.codigoTipo" 
+            name="codigoTipo" 
+            required>
+            <option value="ENTRADA_COMPRA">🟢 ENTRADA_COMPRA (Recepción / Ingreso Físico)</option>
+            <option value="SALIDA_VENTA">🔴 SALIDA_VENTA (Despacho de Mercancía)</option>
+            <option value="AJUSTE_POSITIVO" [disabled]="!puedeAjustar">
+              🔵 AJUSTE_POSITIVO {{ !puedeAjustar ? '🔒 (Requiere Supervisor)' : '' }}
+            </option>
+            <option value="AJUSTE_NEGATIVO" [disabled]="!puedeAjustar">
+              🟡 AJUSTE_NEGATIVO {{ !puedeAjustar ? '🔒 (Requiere Supervisor)' : '' }}
+            </option>
+            <option value="TRASLADO" [disabled]="!puedeTrasladar">
+              🟣 TRASLADO ENTRE ALMACENES {{ !puedeTrasladar ? '🔒 (Requiere Supervisor)' : '' }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Almacén Destino (Solo visible si es TRASLADO) -->
+        <div class="form-group" *ngIf="movimientoForm.codigoTipo === 'TRASLADO'">
+          <label for="almacen-destino">Almacén Destino *</label>
+          <select id="almacen-destino" [(ngModel)]="movimientoForm.idAlmacenDestino" name="idAlmacenDestino" required>
+            <option [value]="2">🏬 Sucursal Norte (Chiclayo)</option>
+            <option [value]="3">🏭 Bodega de Distribución (Arequipa)</option>
+            <option [value]="1">🏢 Almacén Central (Lima)</option>
+          </select>
+        </div>
+
+        <!-- Cantidad -->
+        <div class="form-group">
+          <label for="cantidad">Cantidad a Mover *</label>
+          <input 
+            type="number" 
+            id="cantidad" 
+            [(ngModel)]="movimientoForm.cantidad" 
+            name="cantidad" 
+            min="1" 
+            required>
+          <small class="error-text" *ngIf="esStockInsuficiente">
+            ⚠️ La cantidad supera el stock actual disponible.
+          </small>
+        </div>
+
+        <!-- Motivo / Justificación -->
+        <div class="form-group">
+          <label for="motivo">Motivo o Documento de Referencia *</label>
+          <textarea 
+            id="motivo" 
+            [(ngModel)]="movimientoForm.motivo" 
+            name="motivo" 
+            rows="3" 
+            placeholder="Ej: Factura Proveedor F-102, Guía de Remisión T-002, o Conteo Físico Trimestral"
+            required></textarea>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn btn-submit" 
+          [disabled]="formularioInvalido || guardando">
+          <span *ngIf="!guardando">⚡ Ejecutar Transacción ACID</span>
+          <span *ngIf="guardando">Procesando con Bloqueo Pesimista...</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Panel Derecho: Historial / Kardex -->
+    <div class="card table-card">
+      <div class="card-header-flex">
+        <h2 class="card-title">Kardex de Operaciones en Tiempo Real</h2>
+        <button class="btn btn-refresh" (click)="cargarHistorial()">🔄 Actualizar</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>N° Movimiento</th>
+              <th>Tipo Operación</th>
+              <th>Almacén</th>
+              <th>Motivo / Trazabilidad</th>
+              <th>Fecha / Hora</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="cargando">
+              <td colspan="5" class="loading-state">Cargando transacciones de kardex...</td>
+            </tr>
+            <tr *ngIf="!cargando && historialMovimientos.length === 0">
+              <td colspan="5" class="empty-state">No se registran movimientos en el sistema.</td>
+            </tr>
+            <tr *ngFor="let m of historialMovimientos">
+              <td class="font-mono font-bold">{{ m.numeroMovimiento || ('MOV-' + m.idMovimiento) }}</td>
+              <td>
+                <span class="tipo-badge" [ngClass]="m.tipoMovimiento?.codigo?.toLowerCase() || ''">
+                  {{ m.tipoMovimiento?.codigo || 'OPERACIÓN' }}
+                </span>
+              </td>
+              <td>{{ m.almacenOrigen?.nombre || 'Almacén Central' }}</td>
+              <td>{{ m.motivo }}</td>
+              <td class="text-sm font-mono">{{ m.fechaMovimiento }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

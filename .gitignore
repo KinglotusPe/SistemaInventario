@@ -1,0 +1,29 @@
+# Maven & Build Artifacts
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Tools & Local Binaries
+.tools/
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# Logs & Temporary Files
+*.log
+*.tmp
+*.bak
+
+# Frontend Artifacts (si se compila)
+node_modules/
+dist/
+.angular/

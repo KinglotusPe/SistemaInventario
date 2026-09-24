@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.3.final -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" 
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" 
+              name="reporte_stock_critico" 
+              pageWidth="595" 
+              pageHeight="842" 
+              columnWidth="555" 
+              leftMargin="20" 
+              rightMargin="20" 
+              topMargin="20" 
+              bottomMargin="20" 
+              uuid="b118b625-cf27-4c3d-b6a1-94d310657c91">
+
+    <parameter name="TITULO_EMPRESA" class="java.lang.String"/>
+    <parameter name="RUC_EMPRESA" class="java.lang.String"/>
+    <parameter name="FECHA_EMISION" class="java.lang.String"/>
+    <parameter name="TOTAL_REGISTROS" class="java.lang.Integer"/>
+
+    <field name="codigoSku" class="java.lang.String"/>
+    <field name="nombre" class="java.lang.String"/>
+    <field name="categoria" class="java.lang.String"/>
+    <field name="stockActual" class="java.lang.Integer"/>
+    <field name="stockMinimo" class="java.lang.Integer"/>
+    <field name="precioUnitario" class="java.math.BigDecimal"/>
+    <field name="deficit" class="java.lang.Integer"/>
+
+    <title>
+        <band height="70" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="60" backcolor="#1E293B" uuid="8a176845-8ce6-4a47-a72e-d0061e87319e"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="15" y="8" width="320" height="24" forecolor="#FFFFFF" uuid="7cf691d0-0a25-4c07-b35f-141d6361a9bc"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[REPORTE DE STOCK CRÍTICO]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="15" y="34" width="320" height="18" forecolor="#CBD5E1" uuid="c2491a92-f045-422f-b44c-c045b7367c0c"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{TITULO_EMPRESA} + " | RUC: " + $P{RUC_EMPRESA}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="350" y="20" width="190" height="20" forecolor="#E2E8F0" uuid="797a73fc-bb1e-450f-a4ec-a39626c8ec01"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Emisión: " + $P{FECHA_EMISION}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <columnHeader>
+        <band height="28" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="26" backcolor="#3B82F6" uuid="a71946ae-eef3-40bf-9ec3-9cf65376510a"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="5" y="0" width="85" height="26" forecolor="#FFFFFF" uuid="d939fcbf-a3d8-4f81-a675-d14cfce5db7a"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                <text><![CDATA[SKU]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="95" y="0" width="170" height="26" forecolor="#FFFFFF" uuid="e7b0e271-9c6a-4d76-879e-4c7fa433501a"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                <text><![CDATA[PRODUCTO]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="270" y="0" width="95" height="26" forecolor="#FFFFFF" uuid="f9888be6-574a-4e2b-bb4c-d9c9a0957efb"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                <text><![CDATA[CATEGORÍA]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="370" y="0" width="55" height="26" forecolor="#FFFFFF" uuid="2a52d3a3-a754-4f10-ae49-923f0fe7876a"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                <text><![CDATA[ACTUAL]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="430" y="0" width="55" height="26" forecolor="#FFFFFF" uuid="1cbbcefc-f851-4034-8c83-71a76380ea05"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                <text><![CDATA[MÍNIMO]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="490" y="0" width="60" height="26" forecolor="#FFFFFF" uuid="9213197a-e455-467f-94ad-7e5d80ad6f31"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isBold="true"/></textElement>
+                <text><![CDATA[DÉFICIT]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="22" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="21" width="555" height="1" forecolor="#E2E8F0" uuid="7cf4461d-72e2-45e0-b636-681daae01cae"/>
+            </line>
+            <textField>
+                <reportElement x="5" y="2" width="85" height="18" uuid="e0486c9d-d88e-4f76-8051-789a19d7d2f9"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{codigoSku}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="95" y="2" width="170" height="18" uuid="888db3d1-447a-40a2-97ba-ef7ebf749557"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="270" y="2" width="95" height="18" uuid="8331d575-b6d3-4fcb-8667-bb782ca79fe6"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{categoria}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="370" y="2" width="55" height="18" forecolor="#DC2626" uuid="e9e2f4be-aa8e-49b8-bc23-ecb2b73db4d8"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{stockActual}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="430" y="2" width="55" height="18" uuid="d613e110-388d-4f78-a28a-6b8c9d123456"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{stockMinimo}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="490" y="2" width="60" height="18" forecolor="#DC2626" uuid="a7f8b9c0-1234-5678-9abc-def012345678"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA["-" + $F{deficit}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <pageFooter>
+        <band height="30" splitType="Stretch">
+            <textField>
+                <reportElement x="350" y="5" width="200" height="20" forecolor="#64748B" uuid="8f903822-2616-43d9-95e2-632b6e511111"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement>
+                <textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="5" y="5" width="250" height="20" forecolor="#64748B" uuid="12345678-abcd-ef01-2345-6789abcdef01"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement>
+                <text><![CDATA[Sistema Empresarial de Inventario - Reporte Oficial]]></text>
+            </staticText>
+        </band>
+    </pageFooter>
+</jasperReport>
