@@ -1,5 +1,6 @@
 package com.tienda.inventario.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -24,18 +25,23 @@ public class ProductoDTO implements Serializable {
     private String descripcion;
 
     @NotNull(message = "La categoría es obligatoria")
+    @JsonAlias({"categoriaId", "id_categoria"})
     private Integer idCategoria;
     private String nombreCategoria;
 
+    @JsonAlias({"marcaId", "id_marca"})
     private Integer idMarca;
     private String nombreMarca;
 
+    @JsonAlias({"unidadId", "id_unidad"})
     private Integer idUnidad;
     private String nombreUnidad;
 
+    @JsonAlias({"proveedorId", "id_proveedor"})
     private Integer idProveedor;
     private String razonSocialProveedor;
 
+    @JsonAlias({"precioCompra", "precio_costo", "costo"})
     private BigDecimal precioCosto = BigDecimal.ZERO;
 
     @NotNull(message = "El precio de venta es obligatorio")

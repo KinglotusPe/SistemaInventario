@@ -1,5 +1,6 @@
 package com.tienda.inventario.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -11,11 +12,14 @@ public class MovimientoRequestDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NotNull(message = "El almacén de origen es obligatorio")
+    @JsonAlias({"almacenId", "id_almacen_origen", "almacen_id", "idAlmacen"})
     private Integer idAlmacenOrigen;
 
+    @JsonAlias({"almacenDestinoId", "id_almacen_destino", "almacen_destino_id", "idAlmacenDestino"})
     private Integer idAlmacenDestino; // Requerido si es TRASLADO
 
     @NotBlank(message = "El código de tipo de movimiento es obligatorio (ENTRADA_COMPRA, SALIDA_VENTA, AJUSTE_POSITIVO, AJUSTE_NEGATIVO, TRASLADO)")
+    @JsonAlias({"tipo", "tipoMovimiento", "tipo_movimiento", "codigo_tipo"})
     private String codigoTipo;
 
     @NotBlank(message = "El motivo del movimiento es obligatorio")
@@ -25,6 +29,7 @@ public class MovimientoRequestDTO implements Serializable {
     private List<ItemMovimientoDTO> items = new ArrayList<>();
 
     // Campos de conveniencia para movimientos de un solo producto
+    @JsonAlias({"productoId", "id_producto", "producto_id"})
     private Integer idProducto;
     private Integer cantidad;
 
