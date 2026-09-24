@@ -64,6 +64,18 @@ public class ProductoRestController {
     }
 
     /**
+     * Carga masiva de productos mediante JSON (Array de productos o archivo .json).
+     * Requiere privilegio: PRODUCTO_CREAR o Rol ADMINISTRADOR
+     */
+    @PostMapping("/importar-json")
+    @PreAuthorize("hasAuthority('PRODUCTO_CREAR') or hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponse<List<ProductoDTO>>> importarJson(@Valid @RequestBody List<ProductoDTO> productos) {
+        List<ProductoDTO> importados = productoService.importarProductosJson(productos);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok("Se importaron " + importados.size() + " productos exitosamente al catálogo desde JSON", importados));
+    }
+
+    /**
      * Actualizar datos comerciales de un producto existente.
      * Requiere privilegio: PRODUCTO_EDITAR o Rol ADMINISTRADOR
      */

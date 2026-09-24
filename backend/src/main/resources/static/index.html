@@ -927,158 +927,60 @@
         <p class="login-subtitle">Control de Acceso y Gestión Integral (RBAC)</p>
       </div>
 
-      <!-- Selector de Modo: Login vs Registro JSON -->
-      <div class="auth-tabs">
-        <button type="button" class="auth-tab-btn active" id="tab-btn-login" onclick="cambiarAuthTab('login')">
-          🔑 Iniciar Sesión
-        </button>
-        <button type="button" class="auth-tab-btn" id="tab-btn-register" onclick="cambiarAuthTab('register')">
-          📝 Registrarse (JSON)
-        </button>
+      <!-- Aviso RBAC de Gestión Centralizada -->
+      <div style="text-align: center; margin-bottom: 20px; font-size: 0.8rem; color: #a5b4fc; background: rgba(79, 70, 229, 0.12); border: 1px solid rgba(79, 70, 229, 0.3); padding: 9px 14px; border-radius: 10px; line-height: 1.4;">
+        🛡️ <strong>Control de Acceso RBAC</strong>: La administración y alta de usuarios se realiza exclusivamente por el <strong>Administrador</strong> autenticado en el sistema.
       </div>
 
-      <!-- Alertas de Error y Éxito -->
+      <!-- Error Alert -->
       <div id="login-error-alert" class="login-error-alert">
         <span>⚠️</span>
         <span id="login-error-msg">Credenciales incorrectas.</span>
       </div>
-      <div id="login-success-alert" class="login-success-alert">
-        <span>✅</span>
-        <span id="login-success-msg">Usuario registrado exitosamente.</span>
-      </div>
 
-      <!-- ================= VISTA 1: INICIAR SESIÓN ================= -->
-      <div id="login-view">
-        <form onsubmit="handleLoginSubmit(event)">
-          <div class="login-input-group">
-            <label>Nombre de Usuario</label>
-            <div class="login-input-wrap">
-              <span class="login-input-icon">👤</span>
-              <input type="text" id="login-username" class="login-input" placeholder="Ingresa tu usuario" required autocomplete="username">
-            </div>
-          </div>
-
-          <div class="login-input-group">
-            <label>Contraseña</label>
-            <div class="login-input-wrap">
-              <span class="login-input-icon">🔒</span>
-              <input type="password" id="login-password" class="login-input" placeholder="Ingresa tu contraseña" required autocomplete="current-password">
-            </div>
-          </div>
-
-          <button type="submit" id="btn-login-submit" class="btn-login-submit">
-            Iniciar Sesión
-          </button>
-        </form>
-
-        <!-- Quick Credential Auto-Fill Chips (Para evaluación ágil del docente) -->
-        <div class="quick-creds-card">
-          <div class="quick-creds-title">Cuentas del Sistema (Clic para rellenar):</div>
-          <div class="quick-chips-grid">
-            <div class="cred-chip" onclick="rellenarCredenciales('admin', 'Admin123*')">
-              <div class="cred-chip-role" style="color: #c084fc;">👑 Administrador</div>
-              <div class="cred-chip-user">user: admin</div>
-            </div>
-            <div class="cred-chip" onclick="rellenarCredenciales('supervisor', 'Admin123*')">
-              <div class="cred-chip-role" style="color: #60a5fa;">📋 Supervisor</div>
-              <div class="cred-chip-user">user: supervisor</div>
-            </div>
-            <div class="cred-chip" onclick="rellenarCredenciales('almacenero', 'Admin123*')">
-              <div class="cred-chip-role" style="color: #fbbf24;">📦 Almacenero</div>
-              <div class="cred-chip-user">user: almacenero</div>
-            </div>
-            <div class="cred-chip" onclick="rellenarCredenciales('cajero', 'Admin123*')">
-              <div class="cred-chip-role" style="color: #34d399;">💳 Cajero</div>
-              <div class="cred-chip-user">user: cajero</div>
-            </div>
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="login-input-group">
+          <label>Nombre de Usuario</label>
+          <div class="login-input-wrap">
+            <span class="login-input-icon">👤</span>
+            <input type="text" id="login-username" class="login-input" placeholder="Ingresa tu usuario" required autocomplete="username">
           </div>
         </div>
-      </div>
 
-      <!-- ================= VISTA 2: REGISTRO JSON ================= -->
-      <div id="register-view" style="display: none;">
-        <form onsubmit="handleRegisterSubmit(event)">
-          <div class="login-grid-2">
-            <div class="login-input-group">
-              <label>Usuario (Username) *</label>
-              <div class="login-input-wrap">
-                <span class="login-input-icon">👤</span>
-                <input type="text" id="reg-username" class="login-input" placeholder="Ej: nuevo.usuario" required oninput="actualizarJsonPreview()">
-              </div>
-            </div>
-            <div class="login-input-group">
-              <label>Contraseña *</label>
-              <div class="login-input-wrap">
-                <span class="login-input-icon">🔒</span>
-                <input type="password" id="reg-password" class="login-input" placeholder="Mínimo 6 car." required oninput="actualizarJsonPreview()">
-              </div>
-            </div>
+        <div class="login-input-group">
+          <label>Contraseña</label>
+          <div class="login-input-wrap">
+            <span class="login-input-icon">🔒</span>
+            <input type="password" id="login-password" class="login-input" placeholder="Ingresa tu contraseña" required autocomplete="current-password">
           </div>
+        </div>
 
-          <div class="login-grid-2">
-            <div class="login-input-group">
-              <label>Nombres *</label>
-              <div class="login-input-wrap">
-                <span class="login-input-icon">🪪</span>
-                <input type="text" id="reg-nombres" class="login-input" placeholder="Ej: Juan" required oninput="actualizarJsonPreview()">
-              </div>
-            </div>
-            <div class="login-input-group">
-              <label>Apellidos *</label>
-              <div class="login-input-wrap">
-                <span class="login-input-icon">🪪</span>
-                <input type="text" id="reg-apellidos" class="login-input" placeholder="Ej: Perez" required oninput="actualizarJsonPreview()">
-              </div>
-            </div>
+        <button type="submit" id="btn-login-submit" class="btn-login-submit">
+          Iniciar Sesión
+        </button>
+      </form>
+
+      <!-- Quick Credential Auto-Fill Chips (Para evaluación ágil del docente) -->
+      <div class="quick-creds-card">
+        <div class="quick-creds-title">Cuentas del Sistema (Clic para rellenar):</div>
+        <div class="quick-chips-grid">
+          <div class="cred-chip" onclick="rellenarCredenciales('admin', 'Admin123*')">
+            <div class="cred-chip-role" style="color: #c084fc;">👑 Administrador</div>
+            <div class="cred-chip-user">user: admin</div>
           </div>
-
-          <div class="login-grid-2">
-            <div class="login-input-group">
-              <label>Correo Electrónico *</label>
-              <div class="login-input-wrap">
-                <span class="login-input-icon">📧</span>
-                <input type="email" id="reg-email" class="login-input" placeholder="usuario@tienda.pe" required oninput="actualizarJsonPreview()">
-              </div>
-            </div>
-            <div class="login-input-group">
-              <label>Teléfono</label>
-              <div class="login-input-wrap">
-                <span class="login-input-icon">📱</span>
-                <input type="text" id="reg-telefono" class="login-input" placeholder="+51 987654321" oninput="actualizarJsonPreview()">
-              </div>
-            </div>
+          <div class="cred-chip" onclick="rellenarCredenciales('supervisor', 'Admin123*')">
+            <div class="cred-chip-role" style="color: #60a5fa;">📋 Supervisor</div>
+            <div class="cred-chip-user">user: supervisor</div>
           </div>
-
-          <div class="login-input-group">
-            <label>Rol en el Sistema (RBAC) *</label>
-            <div class="login-input-wrap">
-              <span class="login-input-icon">🛡️</span>
-              <select id="reg-rol" class="login-input" style="padding-left: 42px; cursor: pointer;" onchange="actualizarJsonPreview()">
-                <option value="ROLE_CAJERO_VENDEDOR">💳 Cajero / Vendedor (Ventas y Clientes)</option>
-                <option value="ROLE_OPERADOR_ALMACEN">📦 Operador de Almacén (Kardex y Stock)</option>
-                <option value="ROLE_SUPERVISOR_ALMACEN">📋 Supervisor de Almacén (Compras y Stock)</option>
-                <option value="ROLE_ADMINISTRADOR">👑 Administrador Total (Acceso Completo)</option>
-              </select>
-            </div>
+          <div class="cred-chip" onclick="rellenarCredenciales('almacenero', 'Admin123*')">
+            <div class="cred-chip-role" style="color: #fbbf24;">📦 Almacenero</div>
+            <div class="cred-chip-user">user: almacenero</div>
           </div>
-
-          <!-- Previsualizador de Carga Útil JSON en Vivo -->
-          <div class="json-preview-card">
-            <div class="json-preview-header">
-              <span>⚡ Carga Útil JSON (Payload POST /api/auth/register)</span>
-              <button type="button" class="btn-copy-json" onclick="copiarJsonPayload()">📋 Copiar JSON</button>
-            </div>
-            <pre id="json-payload-preview" class="json-preview-code">{}</pre>
+          <div class="cred-chip" onclick="rellenarCredenciales('cajero', 'Admin123*')">
+            <div class="cred-chip-role" style="color: #34d399;">💳 Cajero</div>
+            <div class="cred-chip-user">user: cajero</div>
           </div>
-
-          <button type="submit" id="btn-register-submit" class="btn-login-submit" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); margin-top: 14px;">
-            🚀 Enviar Registro JSON (POST)
-          </button>
-
-          <button type="button" onclick="llenarRegistroEjemplo()" style="width: 100%; margin-top: 8px; background: transparent; border: 1px dashed var(--border-focus); color: #a5b4fc; padding: 8px; border-radius: 8px; font-size: 0.8rem; cursor: pointer;">
-            ⚡ Autocompletar Ejemplo de Prueba para el Docente
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   </div>
@@ -1110,6 +1012,9 @@
         </button>
         <button class="tab-btn" id="tab-rbac" onclick="cambiarTab('rbac')">
           🛡️ Matriz RBAC
+        </button>
+        <button class="tab-btn" id="tab-usuarios" onclick="cambiarTab('usuarios')" style="display: none;">
+          👥 Gestión de Usuarios
         </button>
       </div>
 
@@ -1172,6 +1077,9 @@
             <button class="btn btn-outline" onclick="cargarProductos()">
               🔄 Actualizar
             </button>
+            <button class="btn btn-outline" id="btn-importar-prods-json" onclick="abrirModalImportarProductosJson()" style="border-color: #38bdf8; color: #38bdf8; display: none;">
+              📥 Importar Productos (JSON)
+            </button>
             <!-- Visible ONLY for Admin / PRODUCTO_CREAR -->
             <button class="btn btn-primary" id="btn-crear-producto" onclick="abrirModalCrear()">
               + Nuevo Producto
@@ -1220,9 +1128,14 @@
             <h2 class="section-title">Kardex Físico y Movimientos de Almacén</h2>
             <p class="section-desc">Operaciones de inventario bajo control de concurrencia pesimista (Pessimistic Locking).</p>
           </div>
-          <button class="btn btn-outline" onclick="cargarHistorialKardex()">
-            🔄 Refrescar Movimientos
-          </button>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-outline" onclick="cargarHistorialKardex()">
+              🔄 Refrescar Movimientos
+            </button>
+            <button class="btn btn-primary" onclick="abrirModalMovimientoJson()" style="background: linear-gradient(135deg, #0284c7, #0ea5e9);">
+              ⚡ Movimiento con JSON
+            </button>
+          </div>
         </div>
 
         <div class="grid-2cols">
@@ -1610,6 +1523,49 @@
           </table>
         </div>
       </section>
+
+      <!-- ============================================================ -->
+      <!-- TAB 6: GESTIÓN DE USUARIOS Y REGISTRO JSON (ADMIN ONLY)       -->
+      <!-- ============================================================ -->
+      <section id="vista-usuarios" style="display: none;">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">👥 Directorio y Gestión de Usuarios (RBAC)</h2>
+            <p class="section-desc">Alta de personal mediante carga útil JSON, control de contraseñas con hash BCrypt y asignación de roles.</p>
+          </div>
+          <div class="action-group">
+            <button class="btn btn-outline" onclick="cargarUsuariosAdmin()">
+              🔄 Refrescar Lista
+            </button>
+            <button class="btn btn-primary" onclick="abrirModalCrearUsuarioJson()" style="background: linear-gradient(135deg, #4f46e5, #6366f1);">
+              ➕ Registrar Usuario (JSON)
+            </button>
+            <button class="btn btn-outline" onclick="abrirModalImportarUsuariosJson()" style="border-color: #38bdf8; color: #38bdf8;">
+              📥 Carga Masiva (.json)
+            </button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Nombre y Apellidos</th>
+                <th>Correo Electrónico</th>
+                <th>Teléfono</th>
+                <th>Rol Asignado</th>
+                <th class="text-center">Estado</th>
+                <th>Último Acceso</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-usuarios-body">
+              <tr><td colspan="8" class="text-center" style="padding: 24px;">Cargando directorio de usuarios...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -1675,6 +1631,180 @@
       <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
         <button class="btn btn-outline" onclick="cerrarModal('modal-producto')">Cancelar</button>
         <button class="btn btn-primary" onclick="guardarProducto()">Guardar Producto</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: REGISTRAR USUARIO CON JSON (ADMIN ONLY)                 -->
+  <!-- ============================================================== -->
+  <div id="modal-usuario-json" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.25rem;">➕ Registrar Nuevo Usuario (Carga Útil JSON)</h2>
+        <button onclick="cerrarModal('modal-usuario-json')" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <div class="modal-grid">
+        <div class="form-group">
+          <label>Usuario (Username) *</label>
+          <input type="text" id="m-user-username" class="form-control" placeholder="Ej: nuevo.cajero" oninput="actualizarUserJsonPreview()">
+        </div>
+        <div class="form-group">
+          <label>Contraseña *</label>
+          <input type="password" id="m-user-password" class="form-control" placeholder="Mínimo 6 car." oninput="actualizarUserJsonPreview()">
+        </div>
+        <div class="form-group">
+          <label>Nombres *</label>
+          <input type="text" id="m-user-nombres" class="form-control" placeholder="Ej: Ana" oninput="actualizarUserJsonPreview()">
+        </div>
+        <div class="form-group">
+          <label>Apellidos *</label>
+          <input type="text" id="m-user-apellidos" class="form-control" placeholder="Ej: Torres" oninput="actualizarUserJsonPreview()">
+        </div>
+        <div class="form-group">
+          <label>Correo Electrónico *</label>
+          <input type="email" id="m-user-email" class="form-control" placeholder="correo@tienda.pe" oninput="actualizarUserJsonPreview()">
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" id="m-user-telefono" class="form-control" placeholder="+51 987654321" oninput="actualizarUserJsonPreview()">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Rol Asignado en el Sistema (RBAC) *</label>
+        <select id="m-user-rol" class="form-control" onchange="actualizarUserJsonPreview()">
+          <option value="ROLE_CAJERO_VENDEDOR">💳 Cajero / Vendedor (Ventas y Clientes)</option>
+          <option value="ROLE_OPERADOR_ALMACEN">📦 Operador de Almacén (Kardex y Stock)</option>
+          <option value="ROLE_SUPERVISOR_ALMACEN">📋 Supervisor de Almacén (Compras y Stock)</option>
+          <option value="ROLE_ADMINISTRADOR">👑 Administrador Total (Acceso Completo)</option>
+        </select>
+      </div>
+
+      <!-- JSON Preview Box -->
+      <div class="json-preview-card" style="margin-top: 10px;">
+        <div class="json-preview-header">
+          <span>⚡ Carga Útil JSON (Payload POST /api/usuarios)</span>
+          <button type="button" class="btn-copy-json" onclick="copiarModalUserJson()">📋 Copiar JSON</button>
+        </div>
+        <pre id="m-user-json-preview" class="json-preview-code">{}</pre>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px;">
+        <button type="button" class="btn btn-outline" onclick="llenarEjemploUsuarioModal()" style="font-size: 0.8rem; padding: 6px 12px;">
+          ⚡ Datos de Prueba
+        </button>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-outline" onclick="cerrarModal('modal-usuario-json')">Cancelar</button>
+          <button class="btn btn-primary" onclick="guardarUsuarioJson()">🚀 Guardar Usuario (POST)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: CARGA MASIVA DE USUARIOS (.JSON)                        -->
+  <!-- ============================================================== -->
+  <div id="modal-importar-usuarios-json" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.25rem;">📥 Carga Masiva de Usuarios (.json)</h2>
+        <button onclick="cerrarModal('modal-importar-usuarios-json')" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 12px;">
+        Cargue un archivo <code>.json</code> o pegue un arreglo de usuarios para registrarlos por lote en MySQL.
+      </p>
+
+      <div class="form-group">
+        <label>Seleccionar Archivo JSON</label>
+        <input type="file" id="file-usuarios-json" accept=".json,application/json" class="form-control" onchange="leerArchivoUsuarios(event)">
+      </div>
+
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <label>Contenido JSON (Array de Usuarios):</label>
+          <button type="button" class="btn-copy-json" onclick="cargarEjemploUsuariosBatch()">⚡ Cargar Ejemplo</button>
+        </div>
+        <textarea id="txt-usuarios-batch-json" class="form-control" rows="8" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: #060911;" placeholder="[\n  {\n    &quot;username&quot;: &quot;...&quot;,\n    &quot;password&quot;: &quot;...&quot;\n  }\n]"></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+        <button class="btn btn-outline" onclick="cerrarModal('modal-importar-usuarios-json')">Cancelar</button>
+        <button class="btn btn-primary" onclick="procesarImportarUsuariosJson()">🚀 Importar Usuarios (POST /api/usuarios/importar-json)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: IMPORTAR CATÁLOGO DE PRODUCTOS (.JSON)                  -->
+  <!-- ============================================================== -->
+  <div id="modal-importar-productos-json" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 640px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.25rem;">📥 Importar Catálogo de Productos mediante JSON</h2>
+        <button onclick="cerrarModal('modal-importar-productos-json')" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 12px;">
+        Importe nuevos artículos o actualice precios y existencias subiendo un archivo <code>.json</code> o pegando el payload.
+      </p>
+
+      <div class="form-group">
+        <label>Subir Archivo .json</label>
+        <input type="file" id="file-prods-json" accept=".json,application/json" class="form-control" onchange="leerArchivoProductos(event)">
+      </div>
+
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <label>Carga Útil JSON (Array de Productos):</label>
+          <button type="button" class="btn-copy-json" onclick="cargarEjemploProductosBatch()">⚡ Cargar Ejemplo (3 Productos)</button>
+        </div>
+        <textarea id="txt-prods-batch-json" class="form-control" rows="8" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: #060911;" placeholder="[\n  {\n    &quot;codigoSku&quot;: &quot;SKU-LAP-099&quot;,\n    &quot;nombre&quot;: &quot;...&quot;\n  }\n]"></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+        <button class="btn btn-outline" onclick="cerrarModal('modal-importar-productos-json')">Cancelar</button>
+        <button class="btn btn-primary" onclick="procesarImportarProductosJson()" style="background: linear-gradient(135deg, #0284c7, #0ea5e9);">🚀 Procesar e Importar Catálogo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: REGISTRAR MOVIMIENTO DE ALMACÉN CON JSON                -->
+  <!-- ============================================================== -->
+  <div id="modal-movimiento-json" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 640px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.25rem;">⚡ Registrar Movimiento de Almacén con JSON</h2>
+        <button onclick="cerrarModal('modal-movimiento-json')" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 12px;">
+        Ejecute operaciones transaccionales en el Kardex enviando la carga útil JSON con bloqueo pesimista (Pessimistic Locking).
+      </p>
+
+      <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;">
+        <button type="button" class="btn-copy-json" onclick="cargarPresetMovimiento('ENTRADA_COMPRA')">📥 Entrada Compra</button>
+        <button type="button" class="btn-copy-json" onclick="cargarPresetMovimiento('SALIDA_VENTA')">📤 Salida Despacho</button>
+        <button type="button" class="btn-copy-json" onclick="cargarPresetMovimiento('AJUSTE_POSITIVO')">⚖️ Ajuste Stock (+)</button>
+        <button type="button" class="btn-copy-json" onclick="cargarPresetMovimiento('TRASLADO')">🔄 Traslado Sedes</button>
+      </div>
+
+      <div class="form-group">
+        <label>Cargar Archivo .json</label>
+        <input type="file" id="file-movimiento-json" accept=".json,application/json" class="form-control" onchange="leerArchivoMovimiento(event)">
+      </div>
+
+      <div class="form-group">
+        <label>Carga Útil JSON del Movimiento:</label>
+        <textarea id="txt-movimiento-json" class="form-control" rows="8" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: #060911;" placeholder="{ &quot;idAlmacenOrigen&quot;: 1, ... }"></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+        <button class="btn btn-outline" onclick="cerrarModal('modal-movimiento-json')">Cancelar</button>
+        <button class="btn btn-primary" onclick="procesarMovimientoJson()" style="background: linear-gradient(135deg, #0284c7, #0ea5e9);">🚀 Ejecutar Movimiento Transaccional</button>
       </div>
     </div>
   </div>
@@ -1748,172 +1878,12 @@
     }
 
     // =========================================================================
-    // CONTROL DE AUTENTICACIÓN, REGISTRO JSON Y PANTALLA DE LOGEO
+    // CONTROL DE AUTENTICACIÓN Y PANTALLA DE LOGEO
     // =========================================================================
-    function cambiarAuthTab(tab) {
-      const loginView = document.getElementById('login-view');
-      const registerView = document.getElementById('register-view');
-      const tabBtnLogin = document.getElementById('tab-btn-login');
-      const tabBtnRegister = document.getElementById('tab-btn-register');
-      const errAlert = document.getElementById('login-error-alert');
-      const succAlert = document.getElementById('login-success-alert');
-
-      errAlert.style.display = 'none';
-      succAlert.style.display = 'none';
-
-      if (tab === 'login') {
-        tabBtnLogin.classList.add('active');
-        tabBtnRegister.classList.remove('active');
-        loginView.style.display = 'block';
-        registerView.style.display = 'none';
-      } else {
-        tabBtnRegister.classList.add('active');
-        tabBtnLogin.classList.remove('active');
-        loginView.style.display = 'none';
-        registerView.style.display = 'block';
-        actualizarJsonPreview();
-      }
-    }
-
-    function actualizarJsonPreview() {
-      const u = document.getElementById('reg-username')?.value.trim() || 'nuevo.usuario';
-      const p = document.getElementById('reg-password')?.value ? '••••••••' : 'Clave123*';
-      const n = document.getElementById('reg-nombres')?.value.trim() || 'Juan';
-      const a = document.getElementById('reg-apellidos')?.value.trim() || 'Perez';
-      const e = document.getElementById('reg-email')?.value.trim() || 'usuario@tienda.pe';
-      const t = document.getElementById('reg-telefono')?.value.trim() || '+51 987654321';
-      const r = document.getElementById('reg-rol')?.value || 'ROLE_CAJERO_VENDEDOR';
-
-      const payload = {
-        username: u,
-        password: p,
-        nombres: n,
-        apellidos: a,
-        email: e,
-        telefono: t,
-        rol: r
-      };
-
-      const pre = document.getElementById('json-payload-preview');
-      if (pre) {
-        pre.textContent = JSON.stringify(payload, null, 2);
-      }
-    }
-
-    function copiarJsonPayload() {
-      const u = document.getElementById('reg-username').value.trim() || 'nuevo.usuario';
-      const p = document.getElementById('reg-password').value || 'Clave123*';
-      const n = document.getElementById('reg-nombres').value.trim() || 'Juan';
-      const a = document.getElementById('reg-apellidos').value.trim() || 'Perez';
-      const e = document.getElementById('reg-email').value.trim() || 'usuario@tienda.pe';
-      const t = document.getElementById('reg-telefono').value.trim() || '+51 987654321';
-      const r = document.getElementById('reg-rol').value || 'ROLE_CAJERO_VENDEDOR';
-
-      const payload = {
-        username: u,
-        password: p,
-        nombres: n,
-        apellidos: a,
-        email: e,
-        telefono: t,
-        rol: r
-      };
-
-      navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(() => {
-        showToast('📋 ¡Carga útil JSON copiada al portapapeles!', 'info');
-      }).catch(() => {
-        showToast('Copia manual: Selecciona el texto del bloque de código', 'warning');
-      });
-    }
-
-    function llenarRegistroEjemplo() {
-      const rand = Math.floor(Math.random() * 900) + 100;
-      document.getElementById('reg-username').value = `usuario_${rand}`;
-      document.getElementById('reg-password').value = `Demo${rand}*`;
-      document.getElementById('reg-nombres').value = `Carlos`;
-      document.getElementById('reg-apellidos').value = `Mendoza`;
-      document.getElementById('reg-email').value = `carlos${rand}@tienda.pe`;
-      document.getElementById('reg-telefono').value = `+51 987${rand}11`;
-      document.getElementById('reg-rol').value = 'ROLE_CAJERO_VENDEDOR';
-
-      actualizarJsonPreview();
-      showToast('⚡ Datos de prueba completados en el formulario y JSON', 'success');
-    }
-
-    async function handleRegisterSubmit(e) {
-      e.preventDefault();
-      const u = document.getElementById('reg-username').value.trim();
-      const p = document.getElementById('reg-password').value;
-      const n = document.getElementById('reg-nombres').value.trim();
-      const a = document.getElementById('reg-apellidos').value.trim();
-      const em = document.getElementById('reg-email').value.trim();
-      const t = document.getElementById('reg-telefono').value.trim();
-      const r = document.getElementById('reg-rol').value;
-
-      const btn = document.getElementById('btn-register-submit');
-      const errAlert = document.getElementById('login-error-alert');
-      const succAlert = document.getElementById('login-success-alert');
-
-      if (p.length < 6) {
-        errAlert.style.display = 'flex';
-        document.getElementById('login-error-msg').textContent = 'La contraseña debe tener un mínimo de 6 caracteres.';
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Enviando JSON al backend...';
-      errAlert.style.display = 'none';
-      succAlert.style.display = 'none';
-
-      try {
-        const resp = await fetch(`${API_BASE}/auth/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: u,
-            password: p,
-            nombres: n,
-            apellidos: a,
-            email: em,
-            telefono: t,
-            rol: r
-          })
-        });
-
-        const data = await resp.json();
-        if (!resp.ok || !data.success) {
-          throw new Error(data.message || 'Error al procesar el registro');
-        }
-
-        // Mostrar alerta de éxito
-        succAlert.style.display = 'flex';
-        document.getElementById('login-success-msg').textContent = `¡Usuario '${u}' registrado exitosamente mediante JSON! Redirigiendo al login...`;
-        showToast(`🎉 ¡Usuario '${u}' registrado exitosamente!`, 'success');
-
-        // Prellenar credenciales en login y cambiar de tab tras breve pausa
-        setTimeout(() => {
-          document.getElementById('login-username').value = u;
-          document.getElementById('login-password').value = p;
-          cambiarAuthTab('login');
-          succAlert.style.display = 'flex';
-          document.getElementById('login-success-msg').textContent = `¡Cuenta lista! Ya puedes iniciar sesión con '${u}'.`;
-        }, 1500);
-
-      } catch (err) {
-        errAlert.style.display = 'flex';
-        document.getElementById('login-error-msg').textContent = err.message || 'Error al enviar el JSON de registro.';
-        showToast(err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '🚀 Enviar Registro JSON (POST)';
-      }
-    }
-
     function rellenarCredenciales(u, p) {
       document.getElementById('login-username').value = u;
       document.getElementById('login-password').value = p;
       document.getElementById('login-error-alert').style.display = 'none';
-      document.getElementById('login-success-alert').style.display = 'none';
     }
 
     async function handleLoginSubmit(e) {
@@ -1922,12 +1892,10 @@
       const p = document.getElementById('login-password').value;
       const btn = document.getElementById('btn-login-submit');
       const errAlert = document.getElementById('login-error-alert');
-      const succAlert = document.getElementById('login-success-alert');
 
       btn.disabled = true;
       btn.textContent = 'Verificando credenciales...';
       errAlert.style.display = 'none';
-      succAlert.style.display = 'none';
 
       try {
         const resp = await fetch(`${API_BASE}/auth/login`, {
@@ -1939,7 +1907,6 @@
         const data = await resp.json();
         if (!data.success) throw new Error(data.message || 'Error en inicio de sesión');
 
-        // Establecer sesión
         currentUser = {
           token: data.data.token,
           username: data.data.username,
@@ -1950,7 +1917,6 @@
         };
 
         localStorage.setItem('auth_session', JSON.stringify(currentUser));
-
         mostrarDashboard();
         showToast(`¡Bienvenido al sistema, ${currentUser.nombres}!`, 'success');
       } catch (err) {
@@ -1970,8 +1936,6 @@
       document.getElementById('pantalla-login').style.display = 'flex';
       document.getElementById('login-password').value = '';
       document.getElementById('login-error-alert').style.display = 'none';
-      document.getElementById('login-success-alert').style.display = 'none';
-      cambiarAuthTab('login');
     }
 
     // =========================================================================
@@ -2022,71 +1986,66 @@
       const tabVentas = document.getElementById('tab-ventas');
       const tabReportes = document.getElementById('tab-reportes');
       const tabRbac = document.getElementById('tab-rbac');
+      const tabUsuarios = document.getElementById('tab-usuarios');
 
       if (mainRole === 'ROLE_ADMINISTRADOR') {
-        // El Administrador ve TODO
         tabCatalogo.style.display = 'flex';
         tabKardex.style.display = 'flex';
         tabVentas.style.display = 'flex';
         tabReportes.style.display = 'flex';
         tabRbac.style.display = 'flex';
+        if (tabUsuarios) tabUsuarios.style.display = 'flex';
         cambiarTab('catalogo');
       } else if (mainRole === 'ROLE_SUPERVISOR_ALMACEN') {
-        // Supervisor: Catálogo, Kardex, Reportes. NO Ventas, NO RBAC
         tabCatalogo.style.display = 'flex';
         tabKardex.style.display = 'flex';
         tabVentas.style.display = 'none';
         tabReportes.style.display = 'flex';
         tabRbac.style.display = 'none';
+        if (tabUsuarios) tabUsuarios.style.display = 'none';
         cambiarTab('catalogo');
       } else if (mainRole === 'ROLE_OPERADOR_ALMACEN') {
-        // Almacenero: Catálogo y Kardex. NO Ventas, NO Reportes, NO RBAC
         tabCatalogo.style.display = 'flex';
         tabKardex.style.display = 'flex';
         tabVentas.style.display = 'none';
         tabReportes.style.display = 'none';
         tabRbac.style.display = 'none';
+        if (tabUsuarios) tabUsuarios.style.display = 'none';
         cambiarTab('kardex');
       } else if (mainRole === 'ROLE_CAJERO_VENDEDOR') {
-        // Cajero: Ventas y Catálogo. NO Kardex, NO Reportes, NO RBAC
         tabCatalogo.style.display = 'flex';
         tabKardex.style.display = 'none';
         tabVentas.style.display = 'flex';
         tabReportes.style.display = 'none';
         tabRbac.style.display = 'none';
+        if (tabUsuarios) tabUsuarios.style.display = 'none';
         cambiarTab('ventas');
       }
 
-      // 4. Control de VISIBILIDAD DE ACCIONES Y BOTONES DENTRO DE CADA VISTA
-      // 4.1 Botón "+ Nuevo Producto" (Solo Admin)
+      // 4. Botones condicionales
       const btnCrear = document.getElementById('btn-crear-producto');
-      btnCrear.style.display = hasAuthority('PRODUCTO_CREAR') ? 'inline-flex' : 'none';
+      if (btnCrear) btnCrear.style.display = hasAuthority('PRODUCTO_CREAR') ? 'inline-flex' : 'none';
 
-      // 4.2 Columna y Botón "Baja" en Catálogo (Solo Admin)
+      const btnImportarProds = document.getElementById('btn-importar-prods-json');
+      if (btnImportarProds) btnImportarProds.style.display = hasAuthority('PRODUCTO_CREAR') ? 'inline-flex' : 'none';
+
       const thAccionesProd = document.getElementById('th-acciones-producto');
-      if (thAccionesProd) {
-        thAccionesProd.style.display = hasAuthority('PRODUCTO_ELIMINAR') ? '' : 'none';
-      }
+      if (thAccionesProd) thAccionesProd.style.display = hasAuthority('PRODUCTO_ELIMINAR') ? '' : 'none';
 
-      // 4.3 Opciones de Ajuste y Traslado en Kardex (Solo Supervisor y Admin)
       const optAjustes = document.querySelectorAll('.opt-ajuste');
       const optTraslado = document.querySelectorAll('.opt-traslado');
       const puedeAjustar = hasAuthority('INVENTARIO_AJUSTAR');
       const puedeTrasladar = hasAuthority('INVENTARIO_TRASLADAR');
-
       optAjustes.forEach(o => o.style.display = puedeAjustar ? '' : 'none');
       optTraslado.forEach(o => o.style.display = puedeTrasladar ? '' : 'none');
 
-      // 4.4 Columna de acciones en Ventas (Anulación solo Admin)
       const thAccionesVenta = document.getElementById('th-acciones-venta');
-      if (thAccionesVenta) {
-        thAccionesVenta.style.display = hasAuthority('VENTA_ANULAR') ? '' : 'none';
-      }
+      if (thAccionesVenta) thAccionesVenta.style.display = hasAuthority('VENTA_ANULAR') ? '' : 'none';
     }
 
     // Navegación de Pestañas
     function cambiarTab(tab) {
-      const tabs = ['catalogo', 'kardex', 'ventas', 'reportes', 'rbac'];
+      const tabs = ['catalogo', 'kardex', 'ventas', 'reportes', 'rbac', 'usuarios'];
       tabs.forEach(t => {
         const vista = document.getElementById(`vista-${t}`);
         const btn = document.getElementById(`tab-${t}`);
@@ -2097,6 +2056,7 @@
       if (tab === 'catalogo') cargarProductos();
       if (tab === 'kardex') cargarHistorialKardex();
       if (tab === 'ventas') cargarHistorialVentas();
+      if (tab === 'usuarios') cargarUsuariosAdmin();
     }
 
     // =========================================================================
@@ -2579,6 +2539,384 @@
 
       clearTimeout(window.toastTimer);
       window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 4500);
+    }
+
+    // =========================================================================
+    // MÓDULO 6: GESTIÓN DE USUARIOS Y REGISTRO JSON (ADMIN ONLY)
+    // =========================================================================
+    async function cargarUsuariosAdmin() {
+      try {
+        const resp = await apiFetch('/usuarios');
+        const tbody = document.getElementById('tabla-usuarios-body');
+        const usuarios = resp.data || [];
+
+        if (usuarios.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center" style="padding: 24px;">No hay usuarios registrados.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = usuarios.map(u => {
+          const rol = (u.roles && u.roles[0]) ? u.roles[0].nombre.replace('ROLE_', '') : 'SIN_ROL';
+          const fechaAcceso = u.ultimoAcceso ? u.ultimoAcceso.replace('T', ' ').substring(0, 19) : 'Sin accesos registrados';
+          return `
+            <tr>
+              <td class="font-mono text-muted">#${u.idUsuario}</td>
+              <td class="font-mono font-bold">${u.username}</td>
+              <td>${u.nombres} ${u.apellidos}</td>
+              <td>${u.email}</td>
+              <td>${u.telefono || '-'}</td>
+              <td><span class="role-badge admin" style="font-size: 0.72rem;">${rol}</span></td>
+              <td class="text-center">
+                <span class="badge ${u.estado ? 'badge-success' : 'badge-danger'}">
+                  ${u.estado ? 'ACTIVO' : 'INACTIVO'}
+                </span>
+              </td>
+              <td style="font-size: 0.78rem; color: var(--text-dim);">${fechaAcceso}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function abrirModalCrearUsuarioJson() {
+      document.getElementById('m-user-username').value = '';
+      document.getElementById('m-user-password').value = '';
+      document.getElementById('m-user-nombres').value = '';
+      document.getElementById('m-user-apellidos').value = '';
+      document.getElementById('m-user-email').value = '';
+      document.getElementById('m-user-telefono').value = '';
+      document.getElementById('m-user-rol').value = 'ROLE_CAJERO_VENDEDOR';
+      actualizarUserJsonPreview();
+      document.getElementById('modal-usuario-json').style.display = 'flex';
+    }
+
+    function actualizarUserJsonPreview() {
+      const u = document.getElementById('m-user-username')?.value.trim() || 'nuevo.usuario';
+      const p = document.getElementById('m-user-password')?.value ? '••••••••' : 'Password123*';
+      const n = document.getElementById('m-user-nombres')?.value.trim() || 'Ana';
+      const a = document.getElementById('m-user-apellidos')?.value.trim() || 'Torres';
+      const e = document.getElementById('m-user-email')?.value.trim() || 'ana@tienda.pe';
+      const t = document.getElementById('m-user-telefono')?.value.trim() || '+51 987654321';
+      const r = document.getElementById('m-user-rol')?.value || 'ROLE_CAJERO_VENDEDOR';
+
+      const payload = {
+        username: u,
+        password: p,
+        nombres: n,
+        apellidos: a,
+        email: e,
+        telefono: t,
+        rol: r
+      };
+
+      const pre = document.getElementById('m-user-json-preview');
+      if (pre) pre.textContent = JSON.stringify(payload, null, 2);
+    }
+
+    function copiarModalUserJson() {
+      const u = document.getElementById('m-user-username').value.trim() || 'nuevo.usuario';
+      const p = document.getElementById('m-user-password').value || 'Password123*';
+      const n = document.getElementById('m-user-nombres').value.trim() || 'Ana';
+      const a = document.getElementById('m-user-apellidos').value.trim() || 'Torres';
+      const e = document.getElementById('m-user-email').value.trim() || 'ana@tienda.pe';
+      const t = document.getElementById('m-user-telefono').value.trim() || '+51 987654321';
+      const r = document.getElementById('m-user-rol').value || 'ROLE_CAJERO_VENDEDOR';
+
+      const payload = { username: u, password: p, nombres: n, apellidos: a, email: e, telefono: t, rol: r };
+      navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(() => {
+        showToast('📋 JSON copiado al portapapeles', 'info');
+      });
+    }
+
+    function llenarEjemploUsuarioModal() {
+      const rand = Math.floor(Math.random() * 900) + 100;
+      document.getElementById('m-user-username').value = `cajero_${rand}`;
+      document.getElementById('m-user-password').value = `Admin123*`;
+      document.getElementById('m-user-nombres').value = `Mariana`;
+      document.getElementById('m-user-apellidos').value = `Salazar`;
+      document.getElementById('m-user-email').value = `mariana${rand}@tienda.pe`;
+      document.getElementById('m-user-telefono').value = `+51 981${rand}22`;
+      document.getElementById('m-user-rol').value = 'ROLE_CAJERO_VENDEDOR';
+      actualizarUserJsonPreview();
+      showToast('⚡ Formulario completado con datos de prueba', 'success');
+    }
+
+    async function guardarUsuarioJson() {
+      const u = document.getElementById('m-user-username').value.trim();
+      const p = document.getElementById('m-user-password').value;
+      const n = document.getElementById('m-user-nombres').value.trim();
+      const a = document.getElementById('m-user-apellidos').value.trim();
+      const e = document.getElementById('m-user-email').value.trim();
+      const t = document.getElementById('m-user-telefono').value.trim();
+      const r = document.getElementById('m-user-rol').value;
+
+      if (!u || !p || !n || !a || !e) {
+        showToast('Complete todos los campos obligatorios (*)', 'warning');
+        return;
+      }
+      if (p.length < 6) {
+        showToast('La contraseña debe tener mínimo 6 caracteres', 'warning');
+        return;
+      }
+
+      try {
+        await apiFetch('/usuarios', {
+          method: 'POST',
+          body: JSON.stringify({ username: u, password: p, nombres: n, apellidos: a, email: e, telefono: t, rol: r })
+        });
+        showToast(`🎉 ¡Usuario '${u}' registrado exitosamente en el sistema!`, 'success');
+        cerrarModal('modal-usuario-json');
+        cargarUsuariosAdmin();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function abrirModalImportarUsuariosJson() {
+      document.getElementById('file-usuarios-json').value = '';
+      document.getElementById('txt-usuarios-batch-json').value = '';
+      document.getElementById('modal-importar-usuarios-json').style.display = 'flex';
+    }
+
+    function leerArchivoUsuarios(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('txt-usuarios-batch-json').value = e.target.result;
+        showToast(`📁 Archivo '${file.name}' cargado en el editor`, 'info');
+      };
+      reader.readAsText(file);
+    }
+
+    function cargarEjemploUsuariosBatch() {
+      const rand1 = Math.floor(Math.random() * 900) + 100;
+      const rand2 = Math.floor(Math.random() * 900) + 100;
+      const data = [
+        {
+          username: `operador_${rand1}`,
+          password: "Password123*",
+          nombres: "Roberto",
+          apellidos: "Gómez",
+          email: `roberto${rand1}@tienda.pe`,
+          telefono: "+51 987111222",
+          rol: "ROLE_OPERADOR_ALMACEN"
+        },
+        {
+          username: `supervisor_${rand2}`,
+          password: "Password123*",
+          nombres: "Patricia",
+          apellidos: "Vargas",
+          email: `patricia${rand2}@tienda.pe`,
+          telefono: "+51 987333444",
+          rol: "ROLE_SUPERVISOR_ALMACEN"
+        }
+      ];
+      document.getElementById('txt-usuarios-batch-json').value = JSON.stringify(data, null, 2);
+      showToast('⚡ Ejemplo de 2 usuarios cargado', 'success');
+    }
+
+    async function procesarImportarUsuariosJson() {
+      const txt = document.getElementById('txt-usuarios-batch-json').value.trim();
+      if (!txt) {
+        showToast('Pegue o cargue un JSON antes de importar', 'warning');
+        return;
+      }
+      try {
+        const json = JSON.parse(txt);
+        const lista = Array.isArray(json) ? json : [json];
+        const resp = await apiFetch('/usuarios/importar-json', {
+          method: 'POST',
+          body: JSON.stringify(lista)
+        });
+        showToast(resp.message || 'Usuarios importados con éxito', 'success');
+        cerrarModal('modal-importar-usuarios-json');
+        cargarUsuariosAdmin();
+      } catch (err) {
+        showToast('JSON no válido: ' + err.message, 'error');
+      }
+    }
+
+    // =========================================================================
+    // IMPORTACIÓN DE PRODUCTOS MEDIANTE JSON
+    // =========================================================================
+    function abrirModalImportarProductosJson() {
+      document.getElementById('file-prods-json').value = '';
+      document.getElementById('txt-prods-batch-json').value = '';
+      document.getElementById('modal-importar-productos-json').style.display = 'flex';
+    }
+
+    function leerArchivoProductos(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('txt-prods-batch-json').value = e.target.result;
+        showToast(`📁 Archivo '${file.name}' cargado en el editor`, 'info');
+      };
+      reader.readAsText(file);
+    }
+
+    function cargarEjemploProductosBatch() {
+      const rand = Math.floor(Math.random() * 900) + 100;
+      const data = [
+        {
+          codigoSku: `SKU-LAP-${rand}`,
+          codigoBarras: `77512345${rand}`,
+          nombre: `Laptop ASUS ZenBook OLED ${rand}`,
+          descripcion: "Intel Core i7 16GB RAM 512GB SSD",
+          idCategoria: 1,
+          idMarca: 1,
+          idUnidad: 1,
+          precioCosto: 2800.00,
+          precioVenta: 3600.00,
+          stockMinimo: 5,
+          stockActual: 15
+        },
+        {
+          codigoSku: `SKU-TEC-${rand}`,
+          codigoBarras: `77512346${rand}`,
+          nombre: `Teclado Mecánico RGB Pro ${rand}`,
+          descripcion: "Switches Red Hot-Swappable Layout Español",
+          idCategoria: 2,
+          idMarca: 2,
+          idUnidad: 1,
+          precioCosto: 140.00,
+          precioVenta: 220.00,
+          stockMinimo: 10,
+          stockActual: 25
+        },
+        {
+          codigoSku: `SKU-SSD-${rand}`,
+          codigoBarras: `77512347${rand}`,
+          nombre: `SSD Kingston NV2 1TB PCIe 4.0`,
+          descripcion: "Velocidad de lectura hasta 3500MB/s",
+          idCategoria: 3,
+          idMarca: 3,
+          idUnidad: 1,
+          precioCosto: 180.00,
+          precioVenta: 260.00,
+          stockMinimo: 8,
+          stockActual: 30
+        }
+      ];
+      document.getElementById('txt-prods-batch-json').value = JSON.stringify(data, null, 2);
+      showToast('⚡ Ejemplo de 3 productos tecnológicos cargado', 'success');
+    }
+
+    async function procesarImportarProductosJson() {
+      const txt = document.getElementById('txt-prods-batch-json').value.trim();
+      if (!txt) {
+        showToast('Pegue o cargue un JSON de productos antes de importar', 'warning');
+        return;
+      }
+      try {
+        const json = JSON.parse(txt);
+        const lista = Array.isArray(json) ? json : [json];
+        const resp = await apiFetch('/productos/importar-json', {
+          method: 'POST',
+          body: JSON.stringify(lista)
+        });
+        showToast(resp.message || 'Catálogo importado exitosamente desde JSON', 'success');
+        cerrarModal('modal-importar-productos-json');
+        cargarProductos();
+      } catch (err) {
+        showToast('Error al importar productos: ' + err.message, 'error');
+      }
+    }
+
+    // =========================================================================
+    // REGISTRO DE MOVIMIENTOS DE ALMACÉN MEDIANTE JSON
+    // =========================================================================
+    function abrirModalMovimientoJson() {
+      document.getElementById('file-movimiento-json').value = '';
+      cargarPresetMovimiento('ENTRADA_COMPRA');
+      document.getElementById('modal-movimiento-json').style.display = 'flex';
+    }
+
+    function cargarPresetMovimiento(tipo) {
+      const idProd = (listaProductos.length > 0) ? listaProductos[0].idProducto : 1;
+      let payload = {};
+
+      if (tipo === 'ENTRADA_COMPRA') {
+        payload = {
+          idAlmacenOrigen: 1,
+          codigoTipo: "ENTRADA_COMPRA",
+          idProducto: idProd,
+          cantidad: 10,
+          motivo: "Recepción de mercadería según orden de compra JSON"
+        };
+      } else if (tipo === 'SALIDA_VENTA') {
+        payload = {
+          idAlmacenOrigen: 1,
+          codigoTipo: "SALIDA_VENTA",
+          idProducto: idProd,
+          cantidad: 2,
+          motivo: "Despacho comercial transaccional JSON"
+        };
+      } else if (tipo === 'AJUSTE_POSITIVO') {
+        payload = {
+          idAlmacenOrigen: 1,
+          codigoTipo: "AJUSTE_POSITIVO",
+          idProducto: idProd,
+          cantidad: 5,
+          motivo: "Ajuste físico de inventario por conteo cíclico JSON"
+        };
+      } else if (tipo === 'TRASLADO') {
+        payload = {
+          idAlmacenOrigen: 1,
+          idAlmacenDestino: 2,
+          codigoTipo: "TRASLADO",
+          idProducto: idProd,
+          cantidad: 3,
+          motivo: "Reabastecimiento de sede Miraflores vía transferencia JSON"
+        };
+      }
+
+      document.getElementById('txt-movimiento-json').value = JSON.stringify(payload, null, 2);
+      showToast(`⚡ Plantilla de '${tipo}' cargada`, 'info');
+    }
+
+    function leerArchivoMovimiento(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('txt-movimiento-json').value = e.target.result;
+        showToast(`📁 Archivo '${file.name}' cargado en el editor`, 'info');
+      };
+      reader.readAsText(file);
+    }
+
+    async function procesarMovimientoJson() {
+      const txt = document.getElementById('txt-movimiento-json').value.trim();
+      if (!txt) {
+        showToast('Ingrese o cargue una carga útil JSON de movimiento', 'warning');
+        return;
+      }
+      try {
+        const payload = JSON.parse(txt);
+        if (Array.isArray(payload)) {
+          const resp = await apiFetch('/movimientos/importar-json', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          showToast(resp.message || 'Movimientos procesados con éxito', 'success');
+        } else {
+          const resp = await apiFetch('/movimientos', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          showToast(resp.message || 'Movimiento transaccional registrado con éxito', 'success');
+        }
+        cerrarModal('modal-movimiento-json');
+        cargarHistorialKardex();
+        cargarProductos();
+      } catch (err) {
+        showToast('Error en movimiento JSON: ' + err.message, 'error');
+      }
     }
 
     // =========================================================================

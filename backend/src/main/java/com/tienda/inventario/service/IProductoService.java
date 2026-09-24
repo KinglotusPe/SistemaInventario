@@ -24,4 +24,6 @@ public interface IProductoService {
     void eliminarLogico(Integer id);
 
     List<StockCriticoDTO> obtenerProductosStockCritico();
+    
+    List<ProductoDTO> importarProductosJson(List<ProductoDTO> lista);
 }

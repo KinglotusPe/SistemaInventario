@@ -37,6 +37,21 @@ public class MovimientoInventarioRestController {
     }
 
     /**
+     * Registro por lote o importación masiva de movimientos mediante JSON.
+     */
+    @PostMapping("/importar-json")
+    @PreAuthorize("hasAnyAuthority('INVENTARIO_ENTRADA', 'INVENTARIO_SALIDA', 'INVENTARIO_AJUSTAR', 'INVENTARIO_TRASLADAR') or hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponse<java.util.List<MovimientoInventario>>> importarMovimientosJson(
+            @Valid @RequestBody java.util.List<MovimientoRequestDTO> requests) {
+        java.util.List<MovimientoInventario> resultados = new java.util.ArrayList<>();
+        for (MovimientoRequestDTO req : requests) {
+            resultados.add(movimientoService.registrarMovimiento(req));
+        }
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok("Se procesaron " + resultados.size() + " movimientos de almacén exitosamente desde JSON", resultados));
+    }
+
+    /**
      * Historial paginado de movimientos de inventario (Kardex).
      * Requiere privilegio: STOCK_VER o Rol ADMINISTRADOR.
      */

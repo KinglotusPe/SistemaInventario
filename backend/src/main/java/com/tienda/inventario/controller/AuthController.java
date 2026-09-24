@@ -94,51 +94,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok("Autenticación exitosa", jwtResponse));
     }
 
-    /**
-     * Registro de nuevo usuario mediante carga útil JSON (Sign Up).
-     * POST /api/auth/register
-     */
-    @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Usuario>> registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
-        if (usuarioRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("El nombre de usuario '" + signUpRequest.getUsername() + "' ya se encuentra registrado"));
-        }
 
-        if (usuarioRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("El correo electrónico '" + signUpRequest.getEmail() + "' ya se encuentra registrado"));
-        }
-
-        // Crear nueva cuenta con contraseña encriptada con BCrypt
-        Usuario usuario = new Usuario(
-                signUpRequest.getUsername(),
-                passwordEncoder.encode(signUpRequest.getPassword()),
-                signUpRequest.getNombres(),
-                signUpRequest.getApellidos(),
-                signUpRequest.getEmail()
-        );
-        usuario.setTelefono(signUpRequest.getTelefono());
-        usuario.setEstado(true);
-
-        // Asignar el rol solicitado (default: ROLE_CAJERO_VENDEDOR)
-        String nombreRol = signUpRequest.getRol();
-        if (nombreRol == null || nombreRol.isBlank()) {
-            nombreRol = "ROLE_CAJERO_VENDEDOR";
-        } else if (!nombreRol.startsWith("ROLE_")) {
-            nombreRol = "ROLE_" + nombreRol.toUpperCase();
-        }
-
-        Rol rol = rolRepository.findByNombre(nombreRol)
-                .orElseGet(() -> rolRepository.findByNombre("ROLE_CAJERO_VENDEDOR")
-                        .orElseThrow(() -> new RuntimeException("Error: Rol no encontrado en la base de datos")));
-
-        usuario.setRoles(Set.of(rol));
-        Usuario guardado = usuarioRepository.save(usuario);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.ok("Usuario registrado exitosamente mediante JSON", guardado));
-    }
 
     /**
      * Obtener el perfil del usuario autenticado en la sesión actual.

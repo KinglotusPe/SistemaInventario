@@ -124,10 +124,15 @@ d:/SistemaInventarioTienda/
 ### 5. Motor de Reportes PDF con JasperReports 6.21.3
 * Genera documentos ejecutivos en formato estándar PDF compilando directamente la plantilla `stock_critico.jrxml` sin requerir software externo en el cliente. Incluye membrete corporativo, fecha de emisión, cálculo de déficit de reposición y firma digital.
 
-### 6. Registro de Nuevos Usuarios mediante Carga Útil JSON (Sign Up REST)
-* **Endpoint público**: `POST /api/auth/register`
-* **Cabecera**: `Content-Type: application/json`
-* **Carga útil JSON (Payload de ejemplo)**:
+### 6. Gestión e Importación de Usuarios mediante JSON (Restringido al Administrador - RBAC)
+* **Arquitectura de Seguridad Empresarial**: En un sistema de inventario y facturación empresarial **no se permite el autorregistro público**, ya que cualquier usuario anónimo podría asignarse privilegios de Administrador. Por ello, la creación de usuarios está estrictamente protegida y restringida a usuarios autenticados con rol `ROLE_ADMINISTRADOR` o permiso `USUARIO_ADMIN`.
+* **Endpoints Protegidos**:
+  * `POST /api/usuarios` (Registro individual de usuario mediante JSON).
+  * `POST /api/usuarios/importar-json` (Importación masiva de usuarios en lote mediante Array JSON).
+* **Cabeceras Requeridas**:
+  * `Authorization: Bearer <TOKEN_JWT_DEL_ADMINISTRADOR>`
+  * `Content-Type: application/json`
+* **Carga Útil JSON Individual (Ejemplo)**:
   ```json
   {
     "username": "cajero.nuevo",
@@ -139,11 +144,52 @@ d:/SistemaInventarioTienda/
     "rol": "ROLE_CAJERO_VENDEDOR"
   }
   ```
+* **Carga Útil Masiva (Batch JSON)**: Permite subir un archivo `.json` o un array JSON con múltiples usuarios para creación inmediata.
 * **Mecanismos y Reglas de Negocio aplicadas**:
   1. **Validación de unicidad**: Verifica con `usuarioRepository.existsByUsername()` y `existsByEmail()`. Si ya existen, retorna HTTP `400 Bad Request` indicando el conflicto exacto.
   2. **Criptografía de Contraseñas**: La clave viaja en el JSON y es encriptada con algoritmo hash irreversible **BCrypt** antes de persistir en base de datos. La entidad `Usuario` tiene `@JsonIgnore` sobre el campo `password` para jamás exponer el hash en las respuestas JSON.
   3. **Asignación RBAC Dinámica**: Vincula automáticamente la entidad `Rol` seleccionada (`ROLE_ADMINISTRADOR`, `ROLE_SUPERVISOR_ALMACEN`, `ROLE_OPERADOR_ALMACEN` o `ROLE_CAJERO_VENDEDOR`) con sus respectivos permisos granulares en MySQL.
-  4. **Previsualizador en Vivo**: En la pantalla de login (`http://localhost:8080/`), la pestaña **"Registrarse (JSON)"** muestra en tiempo real la estructura JSON que se genera a medida que el usuario escribe, facilitando la demostración ante el docente evaluador.
+  4. **Panel Dedicado en Frontend**: El Administrador dispone de la pestaña **"👥 Gestión de Usuarios"** para listar cuentas, crear con modal de previsualización JSON interactiva y botón de subida de archivos `.json`.
+
+### 7. Carga e Importación Masiva de Productos mediante JSON
+* **Endpoint Protegido**: `POST /api/productos/importar-json`
+* **Permiso requerido**: `@PreAuthorize("hasAuthority('PRODUCTO_CREAR') or hasRole('ADMINISTRADOR')")`
+* **Carga Útil JSON (Array de Productos de Ejemplo)**:
+  ```json
+  [
+    {
+      "codigoSku": "SKU-MON-001",
+      "nombre": "Monitor Gamer Asus ROG 27\" 165Hz",
+      "descripcion": "Panel Fast IPS 1ms QHD HDR400",
+      "precioVenta": 1399.00,
+      "precioCompra": 950.00,
+      "stockMinimo": 3,
+      "stockActual": 12,
+      "codigoBarras": "7759876543210",
+      "categoriaId": 1
+    }
+  ]
+  ```
+* **Lógica de Negocio (Upsert Inteligente)**: Si el SKU ya existe en la base de datos, actualiza su nombre, precios y stock mínimo. Si no existe, crea el producto y genera automáticamente su registro de stock inicial en el almacén principal.
+* **Interfaz de Usuario**: Botón **"📥 Importar Productos (JSON)"** en la vista de Catálogo con selector de archivos `.json` y editor de texto con botón de autollenado de prueba.
+
+### 8. Registro y Operaciones de Almacén / Kardex mediante JSON
+* **Endpoints Protegidos**:
+  * `POST /api/movimientos` (Operación individual de Kardex mediante JSON).
+  * `POST /api/movimientos/importar-json` (Lote de movimientos de almacén mediante JSON).
+* **Permisos requeridos**: `INVENTARIO_ENTRADA`, `INVENTARIO_SALIDA`, `INVENTARIO_AJUSTAR`, `INVENTARIO_TRASLADAR` o `ADMINISTRADOR`.
+* **Carga Útil JSON de Movimiento (Ejemplo Entrada por Compra)**:
+  ```json
+  {
+    "almacenId": 1,
+    "tipo": "ENTRADA_COMPRA",
+    "productoId": 1,
+    "cantidad": 10,
+    "motivo": "Recepción de Orden de Compra OC-2026-001"
+  }
+  ```
+* **Lógica de Negocio**: Ejecuta bloqueo pesimista (`SELECT ... FOR UPDATE`), verifica existencias para evitar inconsistencias de inventario, actualiza saldos en `stock_almacen` y genera el asiento contable en el Kardex físico.
+* **Interfaz de Usuario**: Botón **"⚡ Movimiento con JSON"** en la vista de Kardex con selector de presets automáticos (Entrada por Compra, Salida por Merma, Ajuste por Inventario) y subida de archivos `.json`.
 
 ---
 
@@ -160,8 +206,8 @@ El sistema implementa **RBAC Granular (Role-Based Access Control)** con separaci
 
 | Rol | Usuario | Privilegios Granulares Asignados | ¿Qué puede ver y hacer en el sistema? |
 | :--- | :--- | :--- | :--- |
-| 👑 **Administrador** | `admin` | **18 Privilegios Totales**: `PRODUCTO_CREAR`, `PRODUCTO_VER`, `PRODUCTO_EDITAR`, `PRODUCTO_ELIMINAR`, `STOCK_VER`, `INVENTARIO_ENTRADA`, `INVENTARIO_SALIDA`, `INVENTARIO_AJUSTAR`, `INVENTARIO_TRASLADAR`, `VENTA_REGISTRAR`, `VENTA_VER`, `VENTA_ANULAR`, `COMPRA_REGISTRAR`, `COMPRA_VER`, `COMPRA_APROBAR`, `REPORTE_DESCARGAR`, `USUARIO_ADMIN`, `AUDITORIA_VER` | **Control total del sistema**: Visualiza las 5 pestañas. Puede crear y dar de baja artículos, registrar cualquier movimiento, emitir y anular ventas, descargar PDFs y auditar la matriz RBAC. |
-| 📋 **Supervisor de Almacén** | `supervisor` | `PRODUCTO_VER`, `PRODUCTO_EDITAR`, `STOCK_VER`, `INVENTARIO_ENTRADA`, `INVENTARIO_SALIDA`, `INVENTARIO_AJUSTAR`, `INVENTARIO_TRASLADAR`, `COMPRA_REGISTRAR`, `COMPRA_VER`, `COMPRA_APROBAR`, `REPORTE_DESCARGAR`, `AUDITORIA_VER` | **Gestión de almacén y reportes**: Visualiza Catálogo, Kardex y Reportes PDF. Puede hacer ajustes (+/-), traslados y descargar reportes PDF. No puede emitir ni anular ventas ni dar de baja productos. |
+| 👑 **Administrador** | `admin` | **18 Privilegios Totales**: `PRODUCTO_CREAR`, `PRODUCTO_VER`, `PRODUCTO_EDITAR`, `PRODUCTO_ELIMINAR`, `STOCK_VER`, `INVENTARIO_ENTRADA`, `INVENTARIO_SALIDA`, `INVENTARIO_AJUSTAR`, `INVENTARIO_TRASLADAR`, `VENTA_REGISTRAR`, `VENTA_VER`, `VENTA_ANULAR`, `COMPRA_REGISTRAR`, `COMPRA_VER`, `COMPRA_APROBAR`, `REPORTE_DESCARGAR`, `USUARIO_ADMIN`, `AUDITORIA_VER` | **Control total del sistema**: Acceso a las 5 pestañas principales más la pestaña exclusiva de **Gestión de Usuarios**. Puede crear y dar de baja usuarios, importar productos en lote vía JSON, registrar movimientos JSON, emitir y anular comprobantes, descargar reportes PDF y auditar permisos. |
+| 📋 **Supervisor de Almacén** | `supervisor` | `PRODUCTO_VER`, `PRODUCTO_EDITAR`, `STOCK_VER`, `INVENTARIO_ENTRADA`, `INVENTARIO_SALIDA`, `INVENTARIO_AJUSTAR`, `INVENTARIO_TRASLADAR`, `COMPRA_REGISTRAR`, `COMPRA_VER`, `COMPRA_APROBAR`, `REPORTE_DESCARGAR`, `AUDITORIA_VER` | **Gestión de almacén y reportes**: Visualiza Catálogo, Kardex y Reportes PDF. Puede hacer ajustes (+/-), traslados y descargar reportes PDF. No puede emitir ni anular ventas, ni crear usuarios. |
 | 📦 **Operador de Almacén** | `almacenero` | `PRODUCTO_VER`, `STOCK_VER`, `INVENTARIO_ENTRADA`, `INVENTARIO_SALIDA` | **Operaciones básicas de bodega**: Visualiza Kardex y Catálogo. Solo puede registrar entradas por compra y salidas por despacho. Opciones de Ajuste, Traslado, Ventas y Reportes ocultas. |
 | 💳 **Cajero Vendedor** | `cajero` | `PRODUCTO_VER`, `STOCK_VER`, `VENTA_REGISTRAR`, `VENTA_VER` | **Punto de Venta**: Visualiza Ventas (POS) y Catálogo de precios. Emite boletas y facturas. Botón de anular venta oculto (denegado). No tiene acceso a Kardex ni Reportes. |
 
@@ -192,8 +238,16 @@ El servidor compilará las 19 entidades, conectará con MySQL e iniciará Tomcat
 Ingrese a:
 👉 **http://localhost:8080/**
 
-
-Aparecerá la **Pantalla de Logeo Dedicada**:
-* **Iniciar Sesión**: Ingrese con cualquiera de las cuentas indicadas arriba (o haga clic en los chips rápidos de credenciales).
-* **Registrarse (JSON)**: Cambie a la pestaña "Registrarse (JSON)" para crear nuevas cuentas en tiempo real enviando la carga útil JSON al backend, con previsualización del JSON y botón de autollenado rápido para la evaluación del docente.
+1. **Pantalla de Inicio de Sesión**:
+   * Ingrese con cualquiera de las cuentas indicadas arriba (o haga clic en los chips rápidos: `👑 Admin`, `📋 Supervisor`, `📦 Almacenero`, `💳 Cajero`).
+   * La pantalla explica que la creación de cuentas es una función protegida exclusiva del Administrador.
+2. **Si inicia sesión como Administrador (`admin`)**:
+   * Verá la pestaña **"👥 Gestión de Usuarios"**:
+     * Directorio completo de usuarios activos con sus roles y correos.
+     * Botón **"+ Nuevo Usuario (JSON)"** con previsualización reactiva de JSON y botón de prueba.
+     * Botón **"📁 Subir Lote (.json)"** para importar múltiples usuarios a la vez.
+   * En la pestaña **"📦 Catálogo"**:
+     * Botón **"📥 Importar Productos (JSON)"** para cargar catálogos desde archivo `.json` o texto.
+   * En la pestaña **"📋 Kardex y Movimientos"**:
+     * Botón **"⚡ Movimiento con JSON"** para registrar entradas, salidas o ajustes enviando la carga JSON directamente con validación de concurrencia pesimista.
 

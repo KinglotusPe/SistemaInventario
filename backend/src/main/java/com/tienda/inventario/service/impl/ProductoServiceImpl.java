@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -210,6 +211,36 @@ public class ProductoServiceImpl implements IProductoService {
         dto.setStockActual(totalStock);
 
         return dto;
+    }
+
+    @Override
+    @Transactional
+    public List<ProductoDTO> importarProductosJson(List<ProductoDTO> lista) {
+        List<ProductoDTO> importados = new ArrayList<>();
+        if (lista == null || lista.isEmpty()) {
+            return importados;
+        }
+
+        for (ProductoDTO dto : lista) {
+            if (dto.getCodigoSku() == null || dto.getCodigoSku().trim().isEmpty()) {
+                continue;
+            }
+            if (dto.getIdCategoria() == null || dto.getIdCategoria() <= 0) {
+                dto.setIdCategoria(1);
+            }
+            if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
+                dto.setNombre("Producto Importado " + dto.getCodigoSku().trim());
+            }
+
+            // Si ya existe por SKU, actualizamos sus datos comerciales
+            java.util.Optional<Producto> existente = productoRepository.findByCodigoSku(dto.getCodigoSku().trim().toUpperCase());
+            if (existente.isPresent()) {
+                importados.add(actualizar(existente.get().getIdProducto(), dto));
+            } else {
+                importados.add(guardar(dto));
+            }
+        }
+        return importados;
     }
 }
 
